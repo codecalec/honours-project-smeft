@@ -21,13 +21,15 @@
 
 \usepackage{siunitx}
 
+\usepackage[compat=1.1.0]{tikz-feynman} % generate feynman diagrams
+
 \bibliography{references}
 \overfullrule=2cm % allows to find overfull hboxes much quicker
 
 \binoppenalty=3000
 \relpenalty=3000
 
-\title{Multidimensional Standard Model Effective field theory Analysis}
+\title{Applications of Standard Model Effective Field Theory to 2D differential distributions of top pair production}
 \author{Alexander Veltman\\{\small Advisor: Dr.\ James Keaveney}}
 \affil{Department of Physics,\\University of Cape Town}
 
@@ -39,16 +41,40 @@
 
 \section{Introduction}
 
+\section{Top Physics}
+
+\begin{figure}[h]
+    \centering
+    \feynmandiagram[horizontal=a to b] {
+        i1 -- [gluon] a -- [gluon] i2,
+        a -- [gluon] b,
+        f1 [particle=$\bar{t}$] -- [fermion] b -- [fermion] f2 [particle=$t$],
+    };
+    \caption{Top Quark Pair production}
+\end{figure}
+
+
 \section{Standard Model Effective field theory}
 
+Standard Model effective field theory (SMEFT) is a model-independent framework for identifying and constraining deviations from Standard Model predictions.
+This is done by considering that some higher mass particles or higher energy reactions may exist and seeing the imprints on regular Standard Model cross-sections and interactions.
+The framework introduces a set of dimension-six terms into the Standard Model Lagrangian which only contains operators of dimension-four.
+These includes 59 independent operators (according to what is known as the Warsaw basis) which are built from Standard Model fields and follow the gauge symmetries of the Standard Model \cite{Grzadkowski_2010}.
+
+
+The SMEFT Lagrangian is:
 \begin{equation}\label{eq:smeft_lagrangian}
-    \mathcal{L}_{\text{SMEFT}} = \mathcal{L}_{\text{SM}} + \frac{1}{\Lambda^2} \sum\limits_{i} C_{i} O_{i} + \mathcal{O}(\frac{1}{\Lambda^3}}
+    \mathcal{L}_{\text{SMEFT}} = \mathcal{L}_{\text{SM}} + \frac{1}{\Lambda^2} \sum\limits_{i} C_{i} O_{i} + \mathcal{O}\left(\frac{1}{\Lambda^3}\right)
 \end{equation}
+where $O_{i}$ is a dimension-six operator and $C_{i}$ is an associated dimensionless coupling constant known as a \emph{Wilson Coefficient}.
+The operators are reduced by the energy scale $\Lambda$ of the BSM physics.
+
+These effects manifest themselves in observable data like cross sectional data and differential distributions as \cite{Hartland_2019}
 
 \begin{equation}\label{eq:smeft_cross_section}
     \sigma = \sigma_{\text{SM}} + \sum\limits_{i} \frac{1}{\Lambda^2} C_{i} \sigma_{i} + \sum\limits_{j,k} \frac{1}{\Lambda^4} C_{j} C_{k} \sigma_{j k}
-\end{equation
-
+\end{equation}
+where $\sigma$ could be integrated or differential cross section.
 
 \section{Analysis}
 \subsection{Simulated Templates}
