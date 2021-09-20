@@ -41,7 +41,12 @@
 
 \section{Introduction}
 
-\section{Top Physics}
+\begin{itemize}
+    \item Standard model is good
+    \item
+\end{itemize}
+
+\section{LHC, ATLAS and Top Physics}
 
 \begin{figure}[h]
     \centering
@@ -62,23 +67,55 @@ The framework introduces a set of dimension-six terms into the Standard Model La
 These includes 59 independent operators (according to what is known as the Warsaw basis) which are built from Standard Model fields and follow the gauge symmetries of the Standard Model \cite{Grzadkowski_2010}.
 
 
-The SMEFT Lagrangian is:
+With the additional operators, the SMEFT Lagrangian is
 \begin{equation}\label{eq:smeft_lagrangian}
     \mathcal{L}_{\text{SMEFT}} = \mathcal{L}_{\text{SM}} + \frac{1}{\Lambda^2} \sum\limits_{i} C_{i} O_{i} + \mathcal{O}\left(\frac{1}{\Lambda^3}\right)
 \end{equation}
 where $O_{i}$ is a dimension-six operator and $C_{i}$ is an associated dimensionless coupling constant known as a \emph{Wilson Coefficient}.
 The operators are reduced by the energy scale $\Lambda$ of the BSM physics.
 
-These effects manifest themselves in observable data like cross sectional data and differential distributions as \cite{Hartland_2019}
+These effects manifest themselves in observable cross sectional data \cite{Hartland_2019}
 
 \begin{equation}\label{eq:smeft_cross_section}
     \sigma = \sigma_{\text{SM}} + \sum\limits_{i} \frac{1}{\Lambda^2} C_{i} \sigma_{i} + \sum\limits_{j,k} \frac{1}{\Lambda^4} C_{j} C_{k} \sigma_{j k}
 \end{equation}
-where $\sigma$ could be integrated or differential cross section.
+where $\sigma$ is an integrated cross section.
+
+The effects on differential cross section with respect to an observable are similar
+\begin{equation}\label{eq:smeft_diff_cross_section}
+    \frac{d\sigma}{dX} = \frac{d\sigma}{dX}_{\text{SM}} + \sum\limits_{i} \frac{1}{\Lambda^2} C_{i} \frac{d\sigma_{i}}{dX} + \sum\limits_{j,k} \frac{1}{\Lambda^4} C_{j} C_{k} \frac{d\sigma_{j k}}{dX}
+\end{equation}
+
+Using (\ref{eq:smeft_diff_cross_section}), the influences of SMEFT can be identified within differential cross section measurements obtained through modern collider experiments.
+
+\section{dEFT fitting approach}
+
+\subsection{Overview}
+
+\subsection{Model building}
+
+\subsection{Monte Carlo event generation}
+
+\subsubsection{K-factor determination}
+
+\subsection{Fitting Method}
 
 \section{Analysis}
-\subsection{Simulated Templates}
-\subsection{Fitting Procedure}
+
+
+\subsection{Single operator}
+\subsubsection{Model Validation}
+\subsubsection{Fitting Procedure}
+
+\subsection{Double operator}
+\subsubsection{Model Validation}
+\subsubsection{Fitting Procedure}
+
+\subsection{Triple operator}
+\subsubsection{Model Validation}
+\subsubsection{Fitting Procedure}
+
+
 
 \newpage
 \begingroup
