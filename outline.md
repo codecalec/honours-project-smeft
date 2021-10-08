@@ -8,7 +8,7 @@
 - Still unexplained physics (find examples)
 - SM describes data very well (maybe find examples)
 - Brief talk of smeft
-- talk about top regime
+- talk about tops for smeft
 - mention simultaneous constraining of operators
 
 ## Top Physics
@@ -25,21 +25,21 @@
 - Talk relavent top operators
 
 ## dEFT
-#### Morphing Model Building
-#### Model validation Procedure
-#### Fitting Procedure
+### Morphing Model Building
+### Model validation Procedure
+### Fitting Procedure
 
 ## Analysis
 
-#### Monte Carlo event generation
+### Monte Carlo event generation
 #### K-factor determination
 
-#### mttbar differential cross sections
-###### Model Validation
-###### Results
+### mttbar differential cross sections
+#### Model Validation
+#### Results
 
-#### Multidimensional differential cross sections
-###### Model Validation
-###### Results
+### Multidimensional differential cross sections
+#### Model Validation
+#### Results
 
 ## Conclusions

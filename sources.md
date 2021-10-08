@@ -84,6 +84,24 @@
    pages={1–32}
 }
 
+### [O new physics, where art thou? A global search in the top sector](https://arxiv.org/abs/1910.03606)
+```
+@article{Brivio_2020,
+   title={O new physics, where art thou? A global search in the top sector},
+   volume={2020},
+   ISSN={1029-8479},
+   url={http://dx.doi.org/10.1007/JHEP02(2020)131},
+   DOI={10.1007/jhep02(2020)131},
+   number={2},
+   journal={Journal of High Energy Physics},
+   publisher={Springer Science and Business Media LLC},
+   author={Brivio, Ilaria and Bruggisser, Sebastian and Maltoni, Fabio and Moutafis, Rhea and Plehn, Tilman and Vryonidou, Eleni and Westhoff, Susanne and Zhang, Cen},
+   year={2020},
+   month={Feb}
+}
+```
+
+
 ### [A Monte Carlo global analysis of the Standard Model Effective Field Theory: the top quark sector](https://arxiv.org/abs/1901.05965)
 
 * Section 5 talks about using a NLO analysis
