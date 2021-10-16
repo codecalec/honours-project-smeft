@@ -4,8 +4,11 @@
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{amssymb}
-\usepackage[sorting=none]{biblatex}
+\usepackage[style=numeric-comp,sorting=none]{biblatex}
 \usepackage{warning} % for warning messages
+
+\parskip=1.5ex
+\parindent=0pt
 
 \usepackage{url}
 \usepackage{microtype}
@@ -24,6 +27,9 @@
 \usepackage{siunitx}
 
 \usepackage[compat=1.1.0]{tikz-feynman} % generate feynman diagrams
+
+\renewcommand{\vec}{\mathbf}
+\newcommand{\ts}{\textsuperscript}
 
 \bibliography{references}
 \overfullrule=2cm % allows to find overfull hboxes much quicker
@@ -55,10 +61,16 @@
     \centering
     \feynmandiagram[horizontal=a to b] {
         i1 -- [gluon] a -- [gluon] i2,
-        a -- [gluon] b,
+        a -- b,
         f1 [particle=$\bar{t}$] -- [fermion] b -- [fermion] f2 [particle=$t$],
     };
-    \caption{Top Quark Pair production}
+
+    \feynmandiagram[horizontal=a to b] {
+        i1 [particle=$q$] -- [fermion] a -- [fermion] i2 [particle=$\bar{q}$],
+        a -- b,
+        f1 [particle=$\bar{t}$] -- [fermion] b -- [fermion] f2 [particle=$t$],
+    };
+    \caption{Tree level Feynman diagrams for top quark pair production}
 \end{figure}
 
 
@@ -69,30 +81,36 @@ This is done by considering that some higher mass particles or higher energy rea
 The framework introduces a set of dimension-six terms into the Standard Model Lagrangian which only contains operators of dimension-four.
 These includes 59 independent operators (according to what is known as the Warsaw basis) which are built from Standard Model fields and follow the gauge symmetries of the Standard Model \cite{Grzadkowski_2010}.
 
-
-With the additional operators, the SMEFT Lagrangian is
+With these additional operators, the SMEFT Lagrangian is
 \begin{equation}\label{eq:smeft_lagrangian}
     \mathcal{L}_{\text{SMEFT}} = \mathcal{L}_{\text{SM}} + \frac{1}{\Lambda^2} \sum\limits_{i} C_{i} O_{i} + \mathcal{O}\left(\frac{1}{\Lambda^3}\right)
 \end{equation}
 where $O_{i}$ is a dimension-six operator and $C_{i}$ is an associated dimensionless coupling constant known as a \emph{Wilson Coefficient}.
 The operators are reduced by the energy scale $\Lambda$ of the BSM physics.
-
-These effects manifest themselves in observable cross sectional data \cite{Hartland_2019}
-
+These effects manifest themselves in observable cross sectional data~\cite{Hartland_2019} as
 \begin{equation}\label{eq:smeft_cross_section}
     \sigma = \sigma_{\text{SM}} + \sum\limits_{i} \frac{1}{\Lambda^2} C_{i} \sigma_{i} + \sum\limits_{j,k} \frac{1}{\Lambda^4} C_{j} C_{k} \sigma_{j k}
 \end{equation}
-where $\sigma$ is an integrated cross section.
+where $\sigma$ is an integrated cross section. This can also be extended to differential cross sections which is commonly obtained in high energy physics experiments.
+It is important to note that when $C_{i}=0$ for all operators, the SMEFT Lagrangians simplifies to the SM Lagrangian.
+This implies that a sufficient deviation from a zero measurement may imply affects of new physics.
 
-The effects on differential cross section with respect to an observable are similar
+The effects on differential cross section with respect to an observable $X$ are similar,
 \begin{equation}\label{eq:smeft_diff_cross_section}
-    \frac{d\sigma}{dX} = \frac{d\sigma}{dX}_{\text{SM}} + \sum\limits_{i} \frac{1}{\Lambda^2} C_{i} \frac{d\sigma_{i}}{dX} + \sum\limits_{j,k} \frac{1}{\Lambda^4} C_{j} C_{k} \frac{d\sigma_{j k}}{dX}
+    \frac{d\sigma}{dX} = \frac{d\sigma_{\text{SM}}}{dX} + \sum\limits_{i} \frac{1}{\Lambda^2} C_{i} \frac{d\sigma_{i}}{dX} + \sum\limits_{j,k} \frac{1}{\Lambda^4} C_{j} C_{k} \frac{d\sigma_{j k}}{dX}
 \end{equation}
+in which these differentials are presented as binned measurements in data.
 
 Using (\ref{eq:smeft_diff_cross_section}), the influences of SMEFT can be identified within differential cross section measurements obtained through modern collider experiments.
+Typically, this is done using global fits to many differential cross sectional measurements with respect to different observables.
+This allows different operators, which may be coupled to some observables more than others, to be more effectively constrained.
 
-\todo{link to top physics}
-\todo{Talk about relevant operators to top production}
+There has been interest in looking at the influences of SMEFT within the study of top quarks~\cite{Hartland_2019,Buckley_2015,Brivio_2020} due to the possibility of the top quark as an area for possible BSM physics.
+This report will investigate top pair production whose cross section at lowest order is only impacted by limited sets of the dimension-6 operators. For the $q\bar{q} \rightarrow t\bar{t}$ process, the only relevant operator is $O_{tg}$.
+The $gg \rightarrow t\bar{t}$ process is affected by $O_{tg}$ as well as a set of 8 operators known as four-fermion operators.
+This report will only look at the four-fermion operator $O_{tq}^{8}$.
+
+\todo{maybe add more}
 
 \begin{figure}
     \centering
@@ -141,7 +159,11 @@ Using (\ref{eq:smeft_diff_cross_section}), the influences of SMEFT can be identi
 \end{figure}
 
 \section{dEFT}
-\todo{dEFT bio}
+
+dEFT, or differential Effective Field Theory tool, is an Python package created by Dr. James Keaveney~\cite{Keaveney_dEFT} to allow for predictions of SMEFT effects using differential cross section measurements.
+For this report, the repository was forked and further development was performed.
+The version used for the analysis contained in this report is available through Github~\cite{codecalec_dEFT} or the PyPI repositories~\cite{pypi_dEFT}.
+Using a single configuration file containing both data and Monte Carlo predictions, dEFT can build a predictive morphing model which is used to estimate a posterior distribution for the relevant Wilson coefficients.
 
 \subsection{Model building}
 dEFT creates predictions for the observables of interest for varying values of Wilson coefficients by constructing a morphing model.
@@ -152,21 +174,74 @@ These predictions must describe the relevant set of operators $O_{i}$ with varyi
 Using $\ref{eq:smeft_cross_section}$, a linear model is constructed using these templates and produces a predictive model $\hat{\sigma}({C_i})$.
 This model now allows for the prediction of some cross sectional observable for any values of Wilson coefficients pertaining to the relevant set of operators.
 
-\subsection{Fitting Method}
-\todo{talk about MCMC}
-\todo{Benefits of MCMC over likelihood minimisation}
+
+Before this model can be considered reliable, it must be validated to ensure sensible predictions are being performed.
+Additional Monte Carlo samples are generated at coefficient values between the templates used to create the model.
+Theses differential cross section samples are then compared to the model predictions to ensure the predictions agree within a suitable error comparable to the statistical error on the Monte Carlo samples.
+Unfortunately, due to validating using Monte Carlo samples, this method of validation is still vulnerable to issues which may arise from the modelling of the samples themselves.
+
+\subsection{Fitting Method}\label{sec:fitting}
+Once a model has been built, a fit to data is possible.
+dEFT performs fitting using Monte Carlo Markov Chain (MCMC) methods which allow for estimation of the likelihood distributions of the Wilson Coefficients using prior assumptions about their possible values.
+The fitting procedure uses \emph{emcee}~\cite{Foreman_Mackey_2013} as its MCMC implementation.
+MCMC requires an estimation for the likelihood function $P(y | C_{i})$ which represents the probability of obtaining some data $y$ given a set of model parameters $C_{i}$.
+
+A common log likelihood definition for binned data with Gaussian errors with the associated model $f$ is
+\begin{equation}
+    P(y | C_{i}) \propto \ln\mathcal{L}(y | C_{i}) = -\sum\limits_{n} (y_{n} - f_{n}(C_{i})) V^{-1} (y_{n} - f_{n}(C_{i}))
+\end{equation}
+where $y_{n}$ is the binned cross sectional data, $V$ is the associated covariance matrix and $f_{n}(C_{i})$ is the morphing model prediction.
+In order for an estimation for the posterior likelihood distribution $P(C_{i} | y)$ to be made, a prior distribution $P(C_{i})$ is required.
+This takes the form of uniform distributions defined by some minimum and maximum for each $C_{i}$ parameter.
+MCMC will systematically sample thoughout $C_{i}$ space building an estimation for the posterior distribution $P(C_{i}|y)$.
+Properties regarding $C_{i}$ can then be inferred.
+
+Since MCMC methods are used, an approximations for the $C_{i}$ distributions is obtained rather than a single value with an associated uncertainty which is common from other likelihood maximisation methods.
+This avoids the issue of finding a local maximisation which can be common due to the quadratic nature of the SMEFT model.
+
+The estimation for the coefficient is extracted from the likelihood distributions by considering percentiles of the discrete MCMC sampler prediction of the marginalised distribution of each operator.
+The 50\ts{th} percentile is attributed as the estimation for the coefficient with the 16\ts{th} and 84\ts{th} percentile forming a 68\% confidence interval about the estimate.
+
 \todo{talk about Smefit methods}
 
 \section{Analysis}
+This analysis will examine the possibility of using double differential cross section measurements with respect to multiple in a SMEFT analysis.
+The results will be compared to outcomes when considering a single differential cross section.
+The main aim of a SMEFT analysis is to place constraints onto Wilson coefficients of SMEFT operators allowing us to investigate the potential occurrences of new interactions or modifications to SM interaction.
+Double differential cross sections are of interest due to the possibility of simultaneously constraining multiple operators which may present as different modifications to observable cross section distributions.
 
-\todo{Talk about ATLAS dataset}
+This report will use differential cross section data of top pair production from the ATLAS experiment~\cite{ATLAS:2019hxz} at the CERN Large Hadron Collider.
+This data was produced from pp collisions performed at a centre-of-mass energy $\sqrt{s} = 13$TeV over the course of 2015 and 2016 with an integrated luminosity of 36.1fb$^{-1}$.
+The $t\bar{t}$ final states are extracted from the $\ell$+jets channel in the resolved topology.
+This channel is characterised by the manner in which the two W bosons produced by the tops decay.
+This channel requires one of the W bosons to decay into a lepton and an associated anti-neutrino and the other W boson must decay into an quark-antiquark pair.
+The tops are then classified as decaying leptonically or hadronically by how the W decayed.
+Resolved topology implies that the decay products of the hadronically decaying top quark are angularly well separated.
+
+The double differential cross section observable considered  were the differential cross section as a function of the invariant mass of the $t\bar{t}$ system $m_{t\bar{t}}$ and the transverse momentum of the hadronically decaying top quark $p_{T}^{t}$.
+For the comparison with a single observable, the differential cross section as a function of just $m_{t\bar{t}}$ was examined.
+\todo{talk about error on data}
+
+The only SMEFT operators considered were $O_{tG}$ and $O_{tq}^{8}$ with corresponding Wilson coefficients $C_{tG}$ and $C_{tq}^8$. \todo{ask james about multiple smeft operators}
+
+This analysis will begin with the details of the Monte Carlo event generation needed to create the morphing models for performing the constraints on the Wilson coefficients.
+This will move into applying this model and obtaining estimations for the distribution of the coefficients for both the single observable and the double observable.
 
 \subsection{Monte Carlo event generation}
 In order to build the morphing model required to generate cross sectional predictions, simulated samples are required throughout the space of Wilson coefficients of the operators of interest.
 These samples were generate using the MadGraph5\textunderscore aMC@NLO~\cite{Alwall_2014} framework which allows for the simulation of processes for a user-defined Lagrangian.
 The SMEFTatNLO~\cite{degrande2020automated} FEYNRULES model implements SMEFT tree level and one loop processes into MadGraph5.
 Though there is the capacity to perform predictions at next-to-leading order, these calculations are very recent \todo{Justify why LO better} and greatly increase the processing time required to produce the Monte Carlo predictions.
-The simulations are performed to fixed order where only the desired observables of $m_{t\bar{t}}$ and ${p_{T}^{t}}$ are calculated and binned in the same binning arrangement as the ATLAS dataset \todo{need to mention ATLAS dataset before this point}.
+The simulations are performed to fixed order where only the desired observables of $m_{t\bar{t}}$ and ${p_{T}^{t}}$ are calculated and binned in the same binning arrangement as the ATLAS dataset
+
+\subsubsection{Uncertainty due to simulation}
+
+The simulation calculations were required to obtain a statistical accuracy of 1\% for the prediction of the integrated cross section of top-antitop production.
+This level was considered a reliable since this error was minimal in comparison to the total uncertainty of the cross sectional data but still able to be performed in a reasonable time frame.
+An accuracy requirement on each bin was unavailable and would have allowed for a clearer comparison to error of the data.
+\todo{talk about error compared to validation value}
+\todo{Maybe add plot comparing stat to mc error}
+\todo{ask james about explaining scale variance}
 
 \subsubsection{\texorpdfstring{$k$}{k}-factor determination}
 Since the generated Monte Carlo samples only included LO processes, theses predictions needed to be scaled to be comparable to the necessary data sets.
@@ -184,7 +259,7 @@ This may have consequences on bins which are not well described at LO though the
 \begin{figure}
     \centering
     \includegraphics[width=0.8\textwidth]{plots/k_factor.png}
-    \caption{Comparison of approximations of levels of prediction for processes contributing to absolute double differential $t\bar{t}$ cross section with respect to $m_{t\bar{t}}$ and $p_{T}^{t}$. The scaling from LO to NLO was determined using a per-bin method and the NNLO prediction was determined using a flat factor.}
+    \caption{Comparison of approximations for processes contributing to absolute double differential $t\bar{t}$ cross section with respect to $m_{t\bar{t}}$ and $p_{T}^{t}$. The scaling from an LO approximation to an NLO approximation was determined using a per-bin method and the NNLO prediction was determined using a flat factor.}
     \label{fig:kfactor}
 \end{figure}
 
@@ -192,6 +267,21 @@ This may have consequences on bins which are not well described at LO though the
 \subsection{\texorpdfstring{$m_{t\bar{t}}$}{mttbar} differential cross section}
 \subsubsection{Model Validation}
 \subsubsection{Results}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{plots/ATLAS_model_result_1D_2OP.png}
+    \caption{Comparison of differential cross section of $t\bar{t}$ production as a function of $m_{t\bar{t}}$ between various morphing model predictions and ATLAS data. This includes model predictions for the optimised Wilson coefficients and for the all zero coefficient case (labelled as SM pred.). The ratio between each model prediction and the data is shown underneath. The errors shown represent statistical and systematic uncertainties of the data.}
+    \label{fig:model_result_1D_2OP}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.4\textwidth]{plots/ATLAS-ctg-ctq8_1D_2OP.png}
+    \caption{Estimation for the 2-dimensional likelihood distribution and 1-dimensional marginal distributions for the Wilson coefficient $C_{tG}$ and $C_{tq}^{8}$. The blue lines represent SM predictions. Uncertainty estimates for the Wilson coefficients are the discussed in Section \ref{sec:fitting} and only represent statistical error.}
+    \label{fig:corner_1D_2OP}
+\end{figure}
+
 
 \subsection{Double differential cross section}
 \subsubsection{Model Validation}
