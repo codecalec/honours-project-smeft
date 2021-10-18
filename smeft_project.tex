@@ -1,4 +1,4 @@
-\documentclass[a4paper]{article}
+\documentclass[a4paper,11pt]{article}
 
 \usepackage[top=1in, bottom=1.25in, left=1.25in, right=1.25in]{geometry}
 \usepackage{graphicx}
@@ -21,6 +21,7 @@
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage[affil-it]{authblk}
+
 
 \usepackage{todonotes}
 
@@ -57,7 +58,7 @@
 
 \section{LHC, ATLAS and Top Physics}
 
-\begin{figure}[h]
+\begin{figure}[htb]
     \centering
     \feynmandiagram[horizontal=a to b] {
         i1 -- [gluon] a -- [gluon] i2,
@@ -112,7 +113,7 @@ This report will only look at the four-fermion operator $O_{tq}^{8}$.
 
 \todo{maybe add more}
 
-\begin{figure}
+\begin{figure}[htb]
     \centering
     \begin{subfigure}[b]{0.20\textwidth}
         \feynmandiagram [small, horizontal=a to b] {
@@ -164,6 +165,12 @@ dEFT, or differential Effective Field Theory tool, is an Python package created 
 For this report, the repository was forked and further development was performed.
 The version used for the analysis contained in this report is available through Github~\cite{codecalec_dEFT} or the PyPI repositories~\cite{pypi_dEFT}.
 Using a single configuration file containing both data and Monte Carlo predictions, dEFT can build a predictive morphing model which is used to estimate a posterior distribution for the relevant Wilson coefficients.
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.5\textwidth]{images/deft-workflow.pdf}
+    \caption{Overview of dEFT workflow}
+\end{figure}
 
 \subsection{Model building}
 dEFT creates predictions for the observables of interest for varying values of Wilson coefficients by constructing a morphing model.
@@ -232,13 +239,22 @@ In order to build the morphing model required to generate cross sectional predic
 These samples were generate using the MadGraph5\textunderscore aMC@NLO~\cite{Alwall_2014} framework which allows for the simulation of processes for a user-defined Lagrangian.
 The SMEFTatNLO~\cite{degrande2020automated} FEYNRULES model implements SMEFT tree level and one loop processes into MadGraph5.
 Though there is the capacity to perform predictions at next-to-leading order, these calculations are very recent \todo{Justify why LO better} and greatly increase the processing time required to produce the Monte Carlo predictions.
-The simulations are performed to fixed order where only the desired observables of $m_{t\bar{t}}$ and ${p_{T}^{t}}$ are calculated and binned in the same binning arrangement as the ATLAS dataset
+The simulations are performed to fixed order where only the desired observables of $m_{t\bar{t}}$ and ${p_{T}^{t}}$ are calculated and binned in the same binning arrangement as the ATLAS dataset of interest.
+
+Separate sets of MC signal was required for the single observable and the double observables analysis.
+Events were generated with values of $C_{tg}$ as -4, -3, -2.5, -2, -1, -0.5, 0, 0.5, 1, 2, 2.5, 3 and 4 and values of $C_{tq}^{8}$ as -4, -3, -2.5, -2, -1, -0.5, 0, 0.5, 1, 2, 2.5, 3 and 4. \todo{maybe rephrase this}
+All permutations of these values were used resulting in a total number of 169 samples to build the model.
+The model validation involved generating 100 validation samples at points different to those used for the building of the model.
+This simulation step imposes a great challenge when wanting to expand into using more SMEFT operators in the model.
+The number of required MC samples to ensure consistent description of the parameter space increases exponentially with the number of operators.
+This is a major factor in the decision to not include all 4-fermion operators in this report and would require more time and computational capacity.
+\todo{mention this fact in conclusion}
 
 \subsubsection{Uncertainty due to simulation}
 
 The simulation calculations were required to obtain a statistical accuracy of 1\% for the prediction of the integrated cross section of top-antitop production.
 This level was considered a reliable since this error was minimal in comparison to the total uncertainty of the cross sectional data but still able to be performed in a reasonable time frame.
-An accuracy requirement on each bin was unavailable and would have allowed for a clearer comparison to error of the data.
+An accuracy requirement on each bin was unavailable and would have allowed for a clearer comparison to the error associated with the data.
 \todo{talk about error compared to validation value}
 \todo{Maybe add plot comparing stat to mc error}
 \todo{ask james about explaining scale variance}
@@ -256,7 +272,7 @@ The per-bin $k$-factor was found by comparing the Standard Model predictions of 
 The theoretical error associated with the calculated $k$-factor is fairly difficult to propagate through the model construction and should be dominated by the error associated with the data.
 This may have consequences on bins which are not well described at LO though the scale variances in these regions should dominate the theoretical uncertainties.
 
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{plots/k_factor.png}
     \caption{Comparison of approximations for processes contributing to absolute double differential $t\bar{t}$ cross section with respect to $m_{t\bar{t}}$ and $p_{T}^{t}$. The scaling from an LO approximation to an NLO approximation was determined using a per-bin method and the NNLO prediction was determined using a flat factor.}
@@ -265,21 +281,58 @@ This may have consequences on bins which are not well described at LO though the
 
 
 \subsection{\texorpdfstring{$m_{t\bar{t}}$}{mttbar} differential cross section}
+\todo{Probably add an intro to the data set}
+\todo{maybe add hepdata entry}
+\todo{talk about covariance matrix}
+
 \subsubsection{Model Validation}
+
+The results of the validation testing can be seen in Figure~\ref{fig:residuals_hist_1D} where deviations between the model predictions and the validation samples are shown by the average relative residuals.
+This deviation is expected to be comparable to the 1\% required accuracy for integrated cross section imposed on the event generation.
+These tests appears to follow an accuracy of 1.09\% which is in-line with the expectation from the event generation.
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.4\textwidth]{./plots/residuals_hist_1D.png}
+    \caption{Distribution of average relative residuals between model predictions at some set of coefficient values and the corresponding MC validation sample for the single observable model. This includes the validation tests over 100 different validation points. The dotted line represents a Gaussian fit to the histogram through $\chi^2$ minimisation with the results of the fit shown.}
+    \label{fig:residuals_hist_1D}
+\end{figure}
+\todo{maybe include example validation plots}
 \subsubsection{Results}
 
-\begin{figure}
-    \centering
-    \includegraphics[width=0.8\textwidth]{plots/ATLAS_model_result_1D_2OP.png}
-    \caption{Comparison of differential cross section of $t\bar{t}$ production as a function of $m_{t\bar{t}}$ between various morphing model predictions and ATLAS data. This includes model predictions for the optimised Wilson coefficients and for the all zero coefficient case (labelled as SM pred.). The ratio between each model prediction and the data is shown underneath. The errors shown represent statistical and systematic uncertainties of the data.}
-    \label{fig:model_result_1D_2OP}
-\end{figure}
+The estimations for the likelihood distributions for the Wilson coefficients are shown in Figure~\ref{fig:corner_1D_2OP}.
+These distributions provide estimates $C_{tG}=0.24^{+0.11}_{-0.11}$ and $C_{tq}^{8}=1.56^{+0.25}_{-0.31}$ with theses estimates only considering statistical deviation of the distribution.
+A notable features of the distribution is the second less prominent peak.
+This is a product of the quadratic nature of the SMEFT model and shows that an alternative solution could still describe the data well.
 
-\begin{figure}
+\begin{figure}[htb]
     \centering
     \includegraphics[width=0.4\textwidth]{plots/ATLAS-ctg-ctq8_1D_2OP.png}
-    \caption{Estimation for the 2-dimensional likelihood distribution and 1-dimensional marginal distributions for the Wilson coefficient $C_{tG}$ and $C_{tq}^{8}$. The blue lines represent SM predictions. Uncertainty estimates for the Wilson coefficients are the discussed in Section \ref{sec:fitting} and only represent statistical error.}
+    \caption{Estimation for the 2-dimensional likelihood distribution and 1-dimensional marginal distributions for the Wilson coefficient $C_{tG}$ and $C_{tq}^{8}$. The blue lines represent SM predictions. The dotted lines on the marginal distributions represent a 68\% confidence interval. Uncertainty estimates for the Wilson coefficients are the discussed in Section \ref{sec:fitting} and only represent statistical error.}
     \label{fig:corner_1D_2OP}
+\end{figure}
+
+The model created using the upper bound of the scale variance of the MC signal produced an estimation of $C_{tG}=0.22^{+0.12}_{+0.11}$ and $C_{tq}=1.39_{-0.35}^{+0.26}$.
+The lower bound of the scale variance of the MC signal produced an estimation of $C_{tG}=0.26^{+0.11}_{0.11}$ and $C_{tq}=1.73_{-0.28}^{+0.24}$.
+This implies a resulting systematic uncertainties introduced due to the scale variance of the simulated data of $\pm0.02$ for $C_{tG}$ and $\pm0.17$ for $C_{tq}^{8}$.
+
+The single observable analysis obtained an estimate for the Wilson coefficients of $C_{tg} = 0.24 \pm 0.11 (stat.) \pm 0.02 (sys.)$ and $C_{tq}^{8}=1.56^{+0.25}_{-0.31} (stat.) \pm 0.17 (sys.)$.
+The model prediction for this estimation can be seen in Figure~\ref{fig:model_result_1D_2OP}.
+The predictions from the model at the optimised coefficients appears to better describe the data compared to using the model with all coefficients force to zero.
+The optimised prediction corresponded to a $\chi^{2}$ per degree of freedom of 0.54 with respect to the data while the all zero prediction corresponded to a $\chi^{2}$ per degree of freedom of 3.16 indicating that the optimised prediction better describes the data.
+
+\todo{talk to jame: is it close to zero}
+The values obtained for the Wilson coefficients $C_{tG}$ and $C_{tq}^{8}$ seem to deviate from their Standard Model value of zero but still agree within 2 or 3 times the 68\% confidence interval.
+This does provide some interest in possibly applying constraints beyond the Standard Model but there are some faults with this consideration.
+The systematic uncertainty associated with the model creation and prediction was not accounted for in the uncertainty estimation.
+Since these influences will equally be present when considering the double differential cross section data, this discussion will be deferred for later\todo{do the later} and these results will be used as a point of comparison between single and double observables analyses.
+
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.6\textwidth]{plots/ATLAS_model_result_1D_2OP.png}
+    \caption{Comparison of differential cross section of $t\bar{t}$ production as a function of $m_{t\bar{t}}$ between various morphing model predictions and ATLAS data. This includes model predictions for the optimised Wilson coefficients and for the all zero coefficient case (labelled as SM pred.). The ratio between each model prediction and the data is shown underneath. The errors shown represent statistical and systematic uncertainties of the data.}
+    \label{fig:model_result_1D_2OP}
 \end{figure}
 
 
@@ -287,9 +340,29 @@ This may have consequences on bins which are not well described at LO though the
 \subsubsection{Model Validation}
 \subsubsection{Results}
 
+The estimations for the likelihood distributions for the Wilson coefficients are shown in Figure~\ref{fig:corner_2D_2OP}.
+The distributions estimate Wilson coefficient values of $C_{tG}=0.49_{-0.07}^{+0.06}$ and $C_{tq}^{8}=-0.51_{-0.70}^{+0.69}$.
+The estimated systematic uncertainty associated with the scale variance of the simulated samples is $^{+0.11}_{-0.13}$ for $C_{tG}$ and $^{+0.21}_{-0.87}$ for $C_{tq}^{8}$
+
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.4\textwidth]{plots/ATLAS-ctg-ctq8_2D_2OP.png}
+    \caption{Estimation for the 2-dimensional likelihood distribution and 1-dimensional marginal distributions for the Wilson coefficient $C_{tG}$ and $C_{tq}^{8}$. The blue lines represent SM predictions. The dotted lines on the marginal distributions represent a 68\% confidence interval. Uncertainty estimates for the Wilson coefficients are the discussed in Section \ref{sec:fitting} and only represent statistical error.}
+    \label{fig:corner_2D_2OP}
+\end{figure}
+
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.8\textwidth]{plots/ATLAS_model_result_2D_2OP.png}
+    \caption{Comparison of differential cross section of $t\bar{t}$ production as a function of $m_{t\bar{t}}$ and $p_{T}^{t}$ between various morphing model predictions and ATLAS data. This includes model predictions for the optimised Wilson coefficients and for the all zero coefficient case (labelled as SM pred.). The ratio between each model prediction and the data is shown underneath. The errors shown represent statistical and systematic uncertainties of the data.}
+    \label{fig:model_result_2D_2OP}
+\end{figure}
+
 \section{Conclusion}
 
-\newpage
+\clearpage
 \begingroup
 \raggedright{}
 \sloppy
