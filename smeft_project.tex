@@ -176,13 +176,13 @@ Using a single configuration file containing both data and Monte Carlo predictio
 dEFT creates predictions for the observables of interest for varying values of Wilson coefficients by constructing a morphing model.
 A morphing model is a linear regression model which allows for the interpolation between different templates.
 These templates are Monte Carlo predictions which are generated around the region of parameter space which would be relevant for some dataset.
-For dEFT's application, cross sectional SMEFT predictions which are generated using some event generation framework are used as templates.
+For dEFT's application, cross sectional SMEFT predictions which are generated using a event generation framework are treated as templates.
 These predictions must describe the relevant set of operators $O_{i}$ with varying Wilson Coefficients in order to produce a reliable model.
-Using $\ref{eq:smeft_cross_section}$, a linear model is constructed using these templates and produces a predictive model $\hat{\sigma}({C_i})$.
+Using ($\ref{eq:smeft_cross_section}$), a linear model is constructed using these templates and produces a predictive model $\hat{\sigma}({C_i})$.
 This model now allows for the prediction of some cross sectional observable for any values of Wilson coefficients pertaining to the relevant set of operators.
+Due to the reliance on MC samples, the model is dependent on the ability to produce high quality SMEFT differential cross section predictions.
 
-
-Before this model can be considered reliable, it must be validated to ensure sensible predictions are being performed.
+The model must be validated to ensure sensible predictions are being performed and the model predicitons can be considered reliable.
 Additional Monte Carlo samples are generated at coefficient values between the templates used to create the model.
 Theses differential cross section samples are then compared to the model predictions to ensure the predictions agree within a suitable error comparable to the statistical error on the Monte Carlo samples.
 Unfortunately, due to validating using Monte Carlo samples, this method of validation is still vulnerable to issues which may arise from the modelling of the samples themselves.
@@ -304,6 +304,7 @@ The estimations for the likelihood distributions for the Wilson coefficients are
 These distributions provide estimates $C_{tG}=0.24^{+0.11}_{-0.11}$ and $C_{tq}^{8}=1.56^{+0.25}_{-0.31}$ with theses estimates only considering statistical deviation of the distribution.
 A notable features of the distribution is the second less prominent peak.
 This is a product of the quadratic nature of the SMEFT model and shows that an alternative solution could still describe the data well.
+The major peak in the distribution appears to show a slight correlation in the coefficients.
 
 \begin{figure}[htb]
     \centering
@@ -338,12 +339,28 @@ Since these influences will equally be present when considering the double diffe
 
 \subsection{Double differential cross section}
 \subsubsection{Model Validation}
+The outcome of the validation tests of the double observable model are shown in Figure~\ref{fig:residuals_hist_2D}.
+The average relative residuals appear to be distributed by a normal distribution with a deviation of 1.68\%.
+This result is larger than the validation deviation of the single obervable but is still comparable to the statistical accuracy of the MC samples.
+
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.4\textwidth]{plots/residuals_hist_2D.png}
+    \caption{Distribution of average relative residuals between model predictions at some set of coefficient values and the corresponding MC validation sample for the double observable model. This includes the validation tests over 100 different validation points. The dotted line represents a Gaussian fit to the histogram through $\chi^2$ minimisation with the results of the fit shown.}
+    \label{fig:residuals_hist_2D}
+\end{figure}
+
 \subsubsection{Results}
 
 The estimations for the likelihood distributions for the Wilson coefficients are shown in Figure~\ref{fig:corner_2D_2OP}.
-The distributions estimate Wilson coefficient values of $C_{tG}=0.49_{-0.07}^{+0.06}$ and $C_{tq}^{8}=-0.51_{-0.70}^{+0.69}$.
-The estimated systematic uncertainty associated with the scale variance of the simulated samples is $^{+0.11}_{-0.13}$ for $C_{tG}$ and $^{+0.21}_{-0.87}$ for $C_{tq}^{8}$
+The distributions produced throught the MCMC method have estimates of the Wilson coefficient values of $C_{tG}=0.49_{-0.07}^{+0.06}$ and $C_{tq}^{8}=-0.51_{-0.70}^{+0.69}$.
+The estimated systematic uncertainty associated with the scale variance of the simulated samples is $^{+0.11}_{-0.13}$ for $C_{tG}$ and $^{+0.21}_{-0.87}$ for $C_{tq}^{8}$. \todo{maybe change to table}
+The final estimation for the Wilson coefficients are $C_{tG} = 0.49_{-0.07}^{+0.06}(stat) ^{+0.11}_{-0.13} (sys.)$ and $C_{tq}^{8}=-0.51_{-0.70}^{+0.69} (stat.) ^{+0.21}_{-0.87} (sys.)$.
+The model prediction for this estimation can be seen in Figure~\ref{fig:model_result_1D_2OP}.
 
+The shape of the distribution shows a more prominent double peak structure compared to what was seen in the single operator analysis.
+This makes interpreting the value of the coefficients fairly difficult. \todo{more detail}
 
 \begin{figure}[htb]
     \centering
