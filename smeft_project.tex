@@ -76,17 +76,23 @@ Any resulting quarks in the final state hardonise to form jets of hadrons which 
 
 \begin{figure}[htb]
     \centering
-    \feynmandiagram[horizontal=a to b] {
-        i1 -- [gluon] a -- [gluon] i2,
-        a -- [gluon] b,
-        f1 [particle=$\bar{t}$] -- [fermion] b -- [fermion] f2 [particle=$t$],
-    };
-
-    \feynmandiagram[horizontal=a to b] {
-        i1 [particle=$q$] -- [fermion] a -- [fermion] i2 [particle=$\bar{q}$],
-        a -- b,
-        f1 [particle=$\bar{t}$] -- [fermion] b -- [fermion] f2 [particle=$t$],
-    };
+    \begin{subfigure}[b]{0.4\textwidth}
+        \centering
+        \feynmandiagram[horizontal=a to b] {
+            i1 -- [gluon] a -- [gluon] i2,
+            a -- [gluon] b,
+            f1 [particle=$\bar{t}$] -- [fermion] b -- [fermion] f2 [particle=$t$],
+        };
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.4\textwidth}
+        \centering
+        \feynmandiagram[horizontal=a to b] {
+            i1 [particle=$q$] -- [fermion] a -- [fermion] i2 [particle=$\bar{q}$],
+            a -- b,
+            f1 [particle=$\bar{t}$] -- [fermion] b -- [fermion] f2 [particle=$t$],
+        };
+    \end{subfigure}
     \caption{Tree level Feynman diagrams for top quark pair production}
 \end{figure}
 
@@ -99,9 +105,12 @@ The interest in the top quark in terms of beyond standard model physics is due t
 The Large Hadron Collider (LHC) is a two-ring-superconducting particle accelerator located at the European Organization for Nuclear Research (CERN) and is the centre-piece of proton-proton collision physics.
 The design consists of two counter-rotating proton beams in a circular ring with a diameter of \SI{26.7}{\kilo\metre}.
 During the years of 2016 to 2018, the maximum achievable centre-of-mass energy $\sqrt{s}$ at the LHC was \SI{13}{\tera\electronvolt} with a luminosity of \si{10^{34}\centi\metre\squared\per\second}.
-Upgrades been performed in recent years to allow energies of \SI{14}{\tera\electronvolt}.~\nocite{Evans:2008zzb}
+Upgrades have been performed in recent years to allow energies of \SI{14}{\tera\electronvolt}.~\nocite{Evans:2008zzb}
+These energies are the highest to be achieved for a particle collider and has allowed for notable landmarks in particle physics including the discovery and verification of the Higgs Boson.
 The LHC is home to a family of detector experiments including ATLAS, ALICE, CMS and LHCb.
 
+The ATLAS collaboration is a large collaboration of physics, engineers, technicians and students with the goal of probing proton-proton collisions using the ATLAS detector.
+It is considered, along with the CMS detector, as a general purpose detector which can measure the various different products created during the collisions.
 
 \section{Standard Model Effective field theory}
 
@@ -222,13 +231,13 @@ The fitting procedure uses \emph{emcee}~\cite{Foreman_Mackey_2013} as its MCMC i
 MCMC requires an estimation for the likelihood function $P(y | C_{i})$ which represents the probability of obtaining some data $y$ given a set of model parameters $C_{i}$.
 
 A common log likelihood definition for binned data with Gaussian errors with the associated model $f$ is
-\begin{equation}
+\begin{equation}\label{eq:likelihood}
     P(y | C_{i}) \propto \ln\mathcal{L}(y | C_{i}) = -\sum\limits_{n} (y_{n} - f_{n}(C_{i})) V^{-1} (y_{n} - f_{n}(C_{i}))
 \end{equation}
 where $y_{n}$ is the binned cross sectional data, $V$ is the associated covariance matrix and $f_{n}(C_{i})$ is the morphing model prediction.
 In order for an estimation for the posterior likelihood distribution $P(C_{i} | y)$ to be made, a prior distribution $P(C_{i})$ is required.
 This takes the form of uniform distributions defined by some minimum and maximum for each $C_{i}$ parameter.
-MCMC will systematically sample thoughout $C_{i}$ space building an estimation for the posterior distribution $P(C_{i}|y)$.
+MCMC will systematically sample throughout $C_{i}$ space building an estimation for the posterior distribution $P(C_{i}|y)$.
 Properties regarding $C_{i}$ can then be inferred.
 
 Since MCMC methods are used, an approximations for the $C_{i}$ distributions is obtained rather than a single value with an associated uncertainty which is common from other likelihood maximisation methods.
@@ -246,28 +255,50 @@ The results will be compared to outcomes when considering a single differential 
 The main aim of a SMEFT analysis is to place constraints onto Wilson coefficients of SMEFT operators allowing us to investigate the potential occurrences of new interactions or modifications to SM interaction.
 Double differential cross sections are of interest due to the possibility of simultaneously constraining multiple operators which may present as different modifications to observable cross section distributions.
 
-\section{Discussion of observables}
+The only SMEFT operators considered were $O_{tG}$ and $O_{tq}^{8}$ with corresponding Wilson coefficients $C_{tG}$ and $C_{tq}^8$.
+For a full phenomelogical study, the entire set of relevant operators should be included but this would drastically increase the scale of computational processing.
+The limited set of operators should still show the influences of changing from a single dimensional differential cross section to a multidimensional differential cross section.
+
+This analysis will begin with the details of discussion of the ATLAS datasets and the Monte Carlo event generation needed to create the morphing models for performing the constraints on the Wilson coefficients.
+This will move into applying this model and obtaining estimations for the distribution of the coefficients for both the single observable and the double observable.
+
+\subsection{Discussion of Datasets}
 This report will use differential cross section data of top pair production from the ATLAS experiment~\cite{ATLAS:2019hxz} at the CERN Large Hadron Collider.
+The data used is publicly available through HEPData~\cite{hepdata1750330}.
 This data was produced from pp collisions performed at a centre-of-mass energy $\sqrt{s} = 13$TeV over the course of 2015 and 2016 with an integrated luminosity of 36.1fb$^{-1}$.
 The $t\bar{t}$ final states are extracted from the $\ell$+jets channel in the resolved topology.
 Resolved topology implies that the decay products of the hadronically decaying top quark are angularly well separated.
 
 The double differential cross section observable considered  were the differential cross section as a function of the invariant mass of the $t\bar{t}$ system $m_{t\bar{t}}$ and the transverse momentum of the hadronically decaying top quark $p_{T}^{t}$.
+These are the mass of the top-antitop system in it's rest frame and the component of the hadronically decaying top's momentum travelling radially from the beam line in the collider.
 For the comparison with a single observable, the differential cross section as a function of just $m_{t\bar{t}}$ was examined.
-\todo{talk about error on data}
-\begin{itemize}
-    \item trigger and reconstruction of particles and $E_{T}^{miss}$
-    \item efficiency of tagging b jets and light tagging
-    \item signal and background modelling
-\end{itemize}
 
-The only SMEFT operators considered were $O_{tG}$ and $O_{tq}^{8}$ with corresponding Wilson coefficients $C_{tG}$ and $C_{tq}^8$.
-For a full phenomelogical study, the entire set of relevant operators should be included but this would drastically increase the scale of computational processing.
-The limited set of operators should still show the influences of changing from a single dimensional differential cross section to a multidimensional differential cross section.
+The data provided contains the associated statistical and systematic uncertainties introduced during the measurements of the cross sections.
+Multiple sources of systematic uncertainty are introduced in the process of measuring the $t\bar{t}$ systems.
+This includes the uncertainty associated with the reconstruction of the lepton and the various jet products of the process.
+There are also the uncertainty associated with the tagging of jets containing $b$-hadrons as well as accounting for possible misidentifications of jet flavour.
+The uncertainty associated with the reconstruction of the missing transverse momentum $E_{T}^{\text{miss}}$ must also be accounted for.
+Error in the modelling of the signal and background contributions and the Monte Carlo statistical error involved in creating these models are propagated.
+
+Through HEPData, the covariance matrices associated with the differential cross section measurements are made available to the public.
+The analysis was initially conducted including the full covariance matrix of each data set which was implemented into the likelihood definition as seen in (\ref{eq:likelihood}).
+Unfortunately, this caused the likelihood definition to produce fits which described the data very poorly compared to if only the diagonals of the matrices were considered.
+For the differential cross section data with respect to $m_{t\bar{t}}$, the fit produced with the full covariance matrix had a corresponding $\chi^2$ per degree of freedom of 12.60 while this was reduce to 0.53 when only considering the diagonal elements.
+The covariance matrices provided were examined and it was found that they indicated that each bin in the histogram was highly correlated for a dataset of this type.
+The single differential cross section histogram is shown as an example in Figure~\ref{fig:correlation}.
+This was considered to be an error in the covariance matrix provided by HEPData and the covariance between different bins is ignored.
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.5\textwidth]{plots/correlation.png}
+    \caption{Correlation between $m_{t\bar{t}}$ bins of histogram for the differential cross section with respect to $m_{t\bar{t}}$ dataset}
+    \label{fig:correlation}
+\end{figure}
+
+
+
 \todo{ask james about multiple smeft operators}
 
-This analysis will begin with the details of the Monte Carlo event generation needed to create the morphing models for performing the constraints on the Wilson coefficients.
-This will move into applying this model and obtaining estimations for the distribution of the coefficients for both the single observable and the double observable.
 
 \subsection{Monte Carlo event generation}
 In order to build the morphing model required to generate cross sectional predictions, simulated samples are required throughout the space of Wilson coefficients of the operators of interest.
@@ -299,7 +330,7 @@ This provided a scale variance prediction for the Standard Model at LO which cou
 \todo{Maybe add plot comparing stat to mc error}
 \todo{ask james about explaining scale variance}
 
-\subsubsection{\texorpdfstring{$k$}{k}-factor determination}
+\subsubsection{Calculation of \texorpdfstring{$k$}{k}-factor}
 Since the generated Monte Carlo samples only included LO processes, theses predictions needed to be scaled to be comparable to the necessary data sets.
 It can be considered fairly accurate to compare NNLO predictions to actual cross sectional data so a method of scaling the current predictions to this level is required.
 Due to the difficulty in calculating the $k$-factor for different combinations of Wilson coefficients values, the $k$-factor for the Standard Model prediction was used across the various SMEFT predictions.
