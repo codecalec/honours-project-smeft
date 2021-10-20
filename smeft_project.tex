@@ -56,13 +56,29 @@
     \item New frame work called SMEFT
 \end{itemize}
 
-\section{LHC, ATLAS and Top Physics}
+
+\section{Top Physics}
+
+The top quark is the most massive particle in the Standard Model with a rest mass of $m_{t} =172.76\pm0.30$GeV~\cite{ParticleDataGroup:2020ssz} and is commonly used as an regime to look for physics beyond the Standard Model.
+Due to high luminosity achieved by the various experiments present at the Large Hardron Collider, very detailed cross sectional measurements have been achieved, allowing for the ability to implement differential cross section measurements of top quark production in high energy physics analysis.
+
+Top quarks are usually produce in top-antitop pairs through the $gg\rightarrow t\bar{t}$ and $q\bar{q}\rightarrow t\bar{t}$ processes at leading order.
+Leading order (LO) and next-to-leading order (NLO) refer to the number of interactions required for the process to occur.
+For example, the process $gg\rightarrow t\bar{t}$ at leading order involves the incoming gluons annihilating into a single gluon which then decays into a top pair with no additional particles being created or annihilated.
+At the energy levels of the $pp$ collision at the LHC, about 90\% of $t\bar{t}$ production occurs through $gg\rightarrow t\bar{t}$.
+Single top production is also possible through electro weak processes like $q\bar{q}^{\prime}\rightarrow t\bar{b}$ but is not relevant for the observables considered in this report.
+
+Top quarks almost always decay into a $W$ boson and a $b$ quark since due to their short lifetime, top quarks are unable to hadronise.
+Due the $t$ quark's larger mass, it is actually the only quark which can decay in this manner.
+This channel in which a top pair is characterised is by the manner in which the two W bosons produced by each of the tops decay.
+The tops are then classified as decaying leptonically if the $W$ decays into a lepton and an associated neutrino or hadronically if the $W$ decays into 2 quarks.
+Any resulting quarks in the final state hardonise to form jets of hadrons which are then deposited into the detectors.
 
 \begin{figure}[htb]
     \centering
     \feynmandiagram[horizontal=a to b] {
         i1 -- [gluon] a -- [gluon] i2,
-        a -- b,
+        a -- [gluon] b,
         f1 [particle=$\bar{t}$] -- [fermion] b -- [fermion] f2 [particle=$t$],
     };
 
@@ -73,6 +89,18 @@
     };
     \caption{Tree level Feynman diagrams for top quark pair production}
 \end{figure}
+
+
+\todo{tops in BSM physics}
+\nocite{Thomson:2013zua}
+The interest in the top quark in terms of beyond standard model physics is due to it being the quark with the largest coupling to the Higgs boson with a Yakawa coupling $y_{t} \approx 1$.
+
+\section{LHC and the ATLAS experiment}
+The Large Hadron Collider (LHC) is a two-ring-superconducting particle accelerator located at the European Organization for Nuclear Research (CERN) and is the centre-piece of proton-proton collision physics.
+The design consists of two counter-rotating proton beams in a circular ring with a diameter of \SI{26.7}{\kilo\metre}.
+During the years of 2016 to 2018, the maximum achievable centre-of-mass energy $\sqrt{s}$ at the LHC was \SI{13}{\tera\electronvolt} with a luminosity of \si{10^{34}\centi\metre\squared\per\second}.
+Upgrades been performed in recent years to allow energies of \SI{14}{\tera\electronvolt}.~\nocite{Evans:2008zzb}
+The LHC is home to a family of detector experiments including ATLAS, ALICE, CMS and LHCb.
 
 
 \section{Standard Model Effective field theory}
@@ -208,6 +236,7 @@ This avoids the issue of finding a local maximisation which can be common due to
 
 The estimation for the coefficient is extracted from the likelihood distributions by considering percentiles of the discrete MCMC sampler prediction of the marginalised distribution of each operator.
 The 50\ts{th} percentile is attributed as the estimation for the coefficient with the 16\ts{th} and 84\ts{th} percentile forming a 68\% confidence interval about the estimate.
+This estimate allows for asymmetrical errors which can describe the measurement more faithfully than considering just the mean and variance of the samples.
 
 \todo{talk about Smefit methods}
 
@@ -217,19 +246,25 @@ The results will be compared to outcomes when considering a single differential 
 The main aim of a SMEFT analysis is to place constraints onto Wilson coefficients of SMEFT operators allowing us to investigate the potential occurrences of new interactions or modifications to SM interaction.
 Double differential cross sections are of interest due to the possibility of simultaneously constraining multiple operators which may present as different modifications to observable cross section distributions.
 
+\section{Discussion of observables}
 This report will use differential cross section data of top pair production from the ATLAS experiment~\cite{ATLAS:2019hxz} at the CERN Large Hadron Collider.
 This data was produced from pp collisions performed at a centre-of-mass energy $\sqrt{s} = 13$TeV over the course of 2015 and 2016 with an integrated luminosity of 36.1fb$^{-1}$.
 The $t\bar{t}$ final states are extracted from the $\ell$+jets channel in the resolved topology.
-This channel is characterised by the manner in which the two W bosons produced by the tops decay.
-This channel requires one of the W bosons to decay into a lepton and an associated anti-neutrino and the other W boson must decay into an quark-antiquark pair.
-The tops are then classified as decaying leptonically or hadronically by how the W decayed.
 Resolved topology implies that the decay products of the hadronically decaying top quark are angularly well separated.
 
 The double differential cross section observable considered  were the differential cross section as a function of the invariant mass of the $t\bar{t}$ system $m_{t\bar{t}}$ and the transverse momentum of the hadronically decaying top quark $p_{T}^{t}$.
 For the comparison with a single observable, the differential cross section as a function of just $m_{t\bar{t}}$ was examined.
 \todo{talk about error on data}
+\begin{itemize}
+    \item trigger and reconstruction of particles and $E_{T}^{miss}$
+    \item efficiency of tagging b jets and light tagging
+    \item signal and background modelling
+\end{itemize}
 
-The only SMEFT operators considered were $O_{tG}$ and $O_{tq}^{8}$ with corresponding Wilson coefficients $C_{tG}$ and $C_{tq}^8$. \todo{ask james about multiple smeft operators}
+The only SMEFT operators considered were $O_{tG}$ and $O_{tq}^{8}$ with corresponding Wilson coefficients $C_{tG}$ and $C_{tq}^8$.
+For a full phenomelogical study, the entire set of relevant operators should be included but this would drastically increase the scale of computational processing.
+The limited set of operators should still show the influences of changing from a single dimensional differential cross section to a multidimensional differential cross section.
+\todo{ask james about multiple smeft operators}
 
 This analysis will begin with the details of the Monte Carlo event generation needed to create the morphing models for performing the constraints on the Wilson coefficients.
 This will move into applying this model and obtaining estimations for the distribution of the coefficients for both the single observable and the double observable.
@@ -255,6 +290,11 @@ This is a major factor in the decision to not include all 4-fermion operators in
 The simulation calculations were required to obtain a statistical accuracy of 1\% for the prediction of the integrated cross section of top-antitop production.
 This level was considered a reliable since this error was minimal in comparison to the total uncertainty of the cross sectional data but still able to be performed in a reasonable time frame.
 An accuracy requirement on each bin was unavailable and would have allowed for a clearer comparison to the error associated with the data.
+
+Theoretical uncertainties on the Monte Carlo samples also needs to be accounted for.
+This was done by varying the renormalisation and factorisation scales by two for the upper scale and by a half for the lower scale.
+The scale variance was calculated through MadGraph5 using the SMEFTatNLO model with all operators being suppress.
+This provided a scale variance prediction for the Standard Model at LO which could then be applied to SMEFT samples.
 \todo{talk about error compared to validation value}
 \todo{Maybe add plot comparing stat to mc error}
 \todo{ask james about explaining scale variance}
@@ -270,7 +310,7 @@ This is exemplified by the low $m_{t\bar{t}}$ and high $p_{T}^{t}$ region in our
 This is remedied by requiring a per-bin $k$-factor when scaling from LO to NLO but still using the flat factor to build up to NNLO.
 The per-bin $k$-factor was found by comparing the Standard Model predictions of MadGraph5 at LO and NLO and applying this ratio to the Monte Carlo signal.
 The theoretical error associated with the calculated $k$-factor is fairly difficult to propagate through the model construction and should be dominated by the error associated with the data.
-This may have consequences on bins which are not well described at LO though the scale variances in these regions should dominate the theoretical uncertainties.
+This may have consequences on bins which are not well described at LO though the scale variances in these regions should dominate the uncertainties introduced by the $k$-factor.
 
 \begin{figure}[H]
     \centering
