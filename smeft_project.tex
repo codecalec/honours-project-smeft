@@ -37,8 +37,10 @@
 
 \binoppenalty=3000
 \relpenalty=3000
+\clubpenalty=10000
+\widowpenalty=10000
 
-\title{Applications of Standard Model Effective Field Theory to 2D differential distributions of top pair production}
+\title{Constraining the Standard Model Effective Field Theory with 2D differential cross section of top quark pair production}
 \author{Alexander Veltman\\{\small Advisor: Dr.\ James Keaveney}}
 \affil{Department of Physics,\\University of Cape Town}
 
@@ -47,40 +49,46 @@
 
 \begin{abstract}
 \end{abstract}
-
+\newpage
 \section{Introduction}
 
 The Standard Model (SM) is the best description of nature at the subatomic level that modern physics has to offer.
-Using the interactions present in the SM, predictions of observable can be verified to extreme precision using the latest measurements.
+It describes a collection of particles and the forces between them which are mediated by other particles.
+The predictions of physical observables made by the SM can be verified to extreme precision using the latest measurements taken from particle colliders such as the LHC at CERN.
+However, there is still some phenomena which are not explained in the SM.
+It does not provide an explanation for dark energy and dark matter, for electroweak symmetry breaking or for the Gauge hierarchy problem~\cite{morrissey2012}..
+Though the quantity of data available to physicists are orders of magnitudes greater than years prior to the construction of the LHC, no direct searchs for beyond Standard Model (BSM) phenomena have found conclusive evidence of BSM physics at the energies scale of the LHC.
 
-\begin{itemize}
-    \item Standard model is good and accurate
-    \item Cannot explain some phenomena i.e. CP violation and dark energy and dark matter
-    \item direct search for BSM at LHC, no new results
-    \item either non-coupling to SM or high energy
-    \item Consider effective interactions at high energy
-    \item New frame work called SMEFT
-    \item goal is to compare ability to constrain between 1D and 2D cross sections
-\end{itemize}
+The lack of observations of new physics could be the result of two possible options.
+There is the possibility that new physics which may describe the short-comings of the SM exists but is very weakly coupled to the SM particles.
+This would make identifying this physics incredibly difficult with the current methods with which particle physics is measured.
+The other option suggests that this new physics occurs at energies far larger than what is achieved within the most advanced particle collider, the LHC.
+If the SM is considered to be an effective field theory, it is expected that this heavier physics will result in effective interactions which could be identified at the current energy level of the LHC.
+This is the motivation of what is known as the Standard Model effective field theory (SMEFT).
 
+SMEFT is a theoretical framework which introduces a set of higher dimensional operators into the SM with a coupling constant for each operator.
+These operators describe possible effective interactions induced by heavier physics and are suppressed by the energy scale squared of the new physics.
+Due to the increase in detailed measurements of processes such as top pair production, it is possible to use LHC data in order to estimate the couplings for the SMEFT operators.
 
-\section{Top Physics}
+This report applies the framework of SMEFT to a two sets of top quark observables from the ATLAS experiment at CERN.
+This involves a comparison of single and double differential cross section top pair data in order to determine their ability to constrain top quark related SMEFT operators.
+The following report is outlined as follows.
+It begins with some contextual information regarding the top physics in section~\ref{sec:topquarks}, an brief overview of the ATLAS detector in section~\ref{sec:ATLAS} and a more detailed explanation of SMEFT in section~\ref{sec:smeft}.
+This will lead into section~\ref{sec:deft} in which a description of the SMEFT analysis package dEFT is provided.
+The analysis beginning in section~\ref{sec:analysis} will describe the ATLAS data used in the report and will then be proceeded by the details of the Monte Carlo event generation required.
+The analysis was performed for both a single top related operator in section~\ref{sec:analysis_one_op} and then using two operators in section~\ref{sec:analysis_two_op}.
 
-The top quark is the most massive particle in the Standard Model with a rest mass of $m_{t} =172.76\pm0.30$GeV~\cite{ParticleDataGroup:2020ssz} and is commonly used as an regime to look for physics beyond the Standard Model.
-It holds both electrical charge as well as colour charge which allows it to participate in electroweak and strong interactions.
-Due to high luminosity achieved by the various experiments present at the Large Hardron Collider, very detailed cross sectional measurements have been achieved, allowing for the ability to implement differential cross section measurements of top quark production in high energy physics analysis.
+\section{Top Physics}\label{sec:topquarks}
 
-Top quarks are usually produce in top-antitop pairs through the $gg\rightarrow t\bar{t}$ and $q\bar{q}\rightarrow t\bar{t}$ processes at leading order.
+The top quark is the most massive particle in the Standard Model with a mass of $m_{t} =172.76\pm0.30$GeV~\cite{ParticleDataGroup:2020ssz} and is commonly used as an area to look for physics beyond the Standard Model.
+It participates in both electroweak and strong interactions.
+
+At the LHC, top quarks are usually produced in top-antitop pairs through the $gg\rightarrow t\bar{t}$ and $q\bar{q}\rightarrow t\bar{t}$ processes at leading order.
 Leading order (LO) and next-to-leading order (NLO) refer to the number of interactions required for the process to occur.
-For example, the process $gg\rightarrow t\bar{t}$ at leading order involves the incoming gluons annihilating into a single gluon which then decays into a top pair with no additional particles being created or annihilated.
-At the energy levels of the $pp$ collision at the LHC, about 90\% of $t\bar{t}$ production occurs through $gg\rightarrow t\bar{t}$.
-Single top production is also possible through electroweak processes like $q\bar{q}^{\prime}\rightarrow t\bar{b}$ but is not relevant for the observables considered in this report.
-
-Top quarks almost always decay into a $W$ boson and a $b$ quark since it has a short lifetime, the top quark are unable to hadronise.
-Due the $t$ quark's larger mass, it is actually the only quark which can decay in this manner.
-This channel in which a top pair is characterised is by the manner in which the two W bosons produced by each of the tops decay.
-The tops are then classified as decaying leptonically if the $W$ decays into a lepton and an associated neutrino or hadronically if the $W$ decays into 2 quarks.
-Any resulting quarks in the final state hardonise to form jets of hadrons which are then deposited into the detectors.
+An example of a LO process is $gg\rightarrow t\bar{t}$ which involves the incoming gluons annihilating into a single gluon which then decays into a top quark pair with no additional particles being created or annihilated.
+The Feynman diagrams for these LO processes can be seen in Figure~\ref{fig:ttbar_production}.
+It shows that no additional particles other than a single mediating particle and the initial and final states are present in the diagrams.
+At the centre of mass energy of the $pp$ collision at the LHC, about 90\% of $t\bar{t}$ production occurs through $gg\rightarrow t\bar{t}$.
 
 \begin{figure}[htb]
     \centering
@@ -101,15 +109,28 @@ Any resulting quarks in the final state hardonise to form jets of hadrons which 
             f1 [particle=$\bar{t}$] -- [fermion] b -- [fermion] f2 [particle=$t$],
         };
     \end{subfigure}
-    \caption{Tree level Feynman diagrams for top quark pair production}
+    \caption{Lowest order Feynman diagrams for top quark pair production through $gg \rightarrow t\bar{t}$ and $q\bar{q} \rightarrow t\bar{t}$.}
+    \label{fig:ttbar_production}
 \end{figure}
 
+\todo{ask james for sources and context}
+Top quarks almost always decays into a $W$ boson and a $b$ quark since the top quark is unable to hadronise.
+Due to the $t$ having the largest mass of the quarks, it is actually the only quark which can decay in this manner.
+Top quark pair decay is characterised is by the manner in which the two W bosons produced by each of the tops decay.
+The tops are then classified as decaying leptonically if the $W$ decays into a lepton and an associated neutrino or hadronically if the $W$ decays into 2 quarks.
+Any resulting quarks in the final state hardonise to form jets of hadrons.
+Due to high luminosity achieved by the LHC, detailed cross sectional measurements has allowed for the implementation of differential cross section measurements of top quark production into analyses.
+This provides differential cross sectional information with respect to the change of an observable as opposed to integrated cross section which is the total cross section.
 
-\todo{tops in BSM physics}
+
+
 \nocite{Thomson:2013zua}
-The interest in the top quark in terms of beyond standard model physics is due to it being the quark with the largest coupling to the Higgs boson with a Yakawa coupling $y_{t} \approx 1$.
+The interest in the top quark in terms of beyond standard model physics is due to it being the quark with the largest coupling to the Higgs boson with a Yukawa coupling $y_{t} \approx 1$.
+This implies that the top is a major contributor to the first order correction of the Higgs mass which is related to the hierarchy problem.
+Deviations of the top coupling or new top interactions are predicted by many BSM theories.
+Since the birth of the LHC, the large quantities of top related measurements have allowed for incredible precision which has made the search for this exotic physics possible.
 
-\section{LHC and the ATLAS experiment}
+\section{LHC and the ATLAS experiment}\label{sec:ATLAS}
 The Large Hadron Collider (LHC) is a two-ring-superconducting particle accelerator located at the European Organization for Nuclear Research (CERN) and is the centre-piece of proton-proton collision physics.
 The design consists of two counter-rotating proton beams in a circular ring with a diameter of \SI{26.7}{\kilo\metre}.
 During the years of 2016 to 2018, the maximum achievable centre-of-mass energy $\sqrt{s}$ at the LHC was \SI{13}{\tera\electronvolt} with a luminosity of \si{10^{34}\centi\metre\squared\per\second}.
@@ -117,76 +138,75 @@ Upgrades have been performed in recent years to allow energies of \SI{14}{\tera\
 These energies are the highest to be achieved for a particle collider and has allowed for notable landmarks in particle physics including the discovery and verification of the Higgs Boson.
 The LHC is home to a family of detector experiments including ATLAS, ALICE, CMS and LHCb.
 
+\nocite{Atlas2008}
 The ATLAS collaboration is a large collaboration of physics, engineers, technicians and students with the goal of probing proton-proton collisions using the ATLAS detector.
 It is considered, along with the CMS detector, as a general purpose detector which can measure the various different products created during the collisions.
-
 The ATLAS detector consists of various components which together allow for the general detection of particle collisions.
 The largest of which is the magnet system.
-The magnet system allows for the adjustment of particle tracks in order for the momenta of these particle to be measured within the subdetectors.
+The magnet system allows for the adjustment of the trajectories of charged particle in order for the momenta to be measured within the subdetectors.
 The Inner Detector (ID) is the component closest to the beam and cylindrically surrounds the beam pipe.
-This layer performs pattern recognition, momentum and vertex measurements as well as electron identification by applying subdetectors.
+This detector performs momentum and vertex measurements as well as electron identification by applying subdetectors.
 Further out from the beam, there are the calorimeters which provide electromagnetic and hadronic energy measurements.
 These allow for the measurement and identification of photons, electrons, jets and missing transverse energy.
 The muon spectrometer forms the outer part of the detector.
 High muon momentum resolution is possible due to the three layers of high precision tracking chambers.
-There are also three forward detectors which are placed in regions of low azimuthal angles with respect to the beam line.
 The LUCID detector was the first implemented and it is designed to be a luminosity monitor for ATLAS.
 The Zero-Degree Calorimeter (ZDC) detects forward neutrons in heavy-ion collisions.
 The ALFA (absolute luminosity for ATLAS) detector measures elastic proton-proton scattering.
 All these components allow for the reconstruction and measurement of the various underlying physical processes.
+\todo{what more could be added here}
 
-\section{Standard Model Effective field theory}
+\section{Standard Model Effective field theory}\label{sec:smeft}
 
 \nocite{Zhang2011}
 \nocite{franzosi2015probing}
 
-Standard Model effective field theory (SMEFT) is a model-independent framework for identifying and constraining deviations from Standard Model predictions.
-This is done by considering that some higher mass particles or higher energy reactions may exist and seeing the imprints on regular Standard Model cross-sections and interactions.
-The framework introduces a set of dimension-six terms into the Standard Model Lagrangian which only contains operators of dimension-four.
-These includes 59 independent operators (according to what is known as the Warsaw basis) which are built from Standard Model fields and follow the gauge symmetries of the Standard Model \cite{Grzadkowski_2010}.
+Standard Model effective field theory (SMEFT) is a model-independent framework which systematically includes new effective particles and interactions into the Standard Model.
+This is done by considering that some higher energy particles and interactions may exist and are described by some effective operators.
+The framework introduces a set of higher-dimensional operator into the Standard Model Lagrangian which only contains operators of dimension-four.
+These includes 59 independent six-dimensional operators (according to what is known as the Warsaw basis) which are built from Standard Model fields and follow the gauge symmetries of the Standard Model \cite{Grzadkowski_2010}.
 
-With these additional operators, the SMEFT Lagrangian is
+With these additional operators, the SMEFT Lagrangian is defined as
 \begin{equation}\label{eq:smeft_lagrangian}
     \mathcal{L}_{\text{SMEFT}} = \mathcal{L}_{\text{SM}} + \frac{1}{\Lambda^2} \sum\limits_{i} C_{i} O_{i} + \mathcal{O}\left(\frac{1}{\Lambda^3}\right)
 \end{equation}
-where $O_{i}$ is a dimension-six operator and $C_{i}$ is an associated dimensionless coupling constant known as a \emph{Wilson Coefficient}.
-The operators are reduced by the energy scale $\Lambda$ of the BSM physics.
-These effects manifest themselves in observable cross sectional data~\cite{Hartland_2019} as
+where $\mathcal{L}_{\text{SM}}$ is the Standard Model Lagrangian, $O_{i}$ is a dimension-six operator and $C_{i}$ is an associated dimensionless coupling constant known as a \emph{Wilson Coefficient}.
+The operators are reduced by the energy scale $\Lambda$ of the proposed BSM physics.
+Terms of order $\Lambda^{-3}$ are considered sufficiently suppressed and operators of dimensions greater than six are removed since they would appear in these terms.
+The calculation of the cross section of a process~\cite{Hartland_2019} in the SMEFT is
 \begin{equation}\label{eq:smeft_cross_section}
-    \sigma = \sigma_{\text{SM}} + \sum\limits_{i} \frac{1}{\Lambda^2} C_{i} \sigma_{i} + \sum\limits_{j,k} \frac{1}{\Lambda^4} C_{j} C_{k} \sigma_{j k}
+    \sigma_{\text{SMEFT}} = \sigma_{\text{SM}} + \sum\limits_{i} \frac{1}{\Lambda^2} C_{i} \sigma_{i} + \sum\limits_{j,k} \frac{1}{\Lambda^4} C_{j} C_{k} \sigma_{j k}
 \end{equation}
-where $\sigma$ is an integrated cross section. This can also be extended to differential cross sections which is commonly obtained in high energy physics experiments.
+where $\sigma_{\text{SM}}$ is the cross section in the SM. This can also be extended to differential cross sections which are commonly obtained in high energy physics experiments.
 It is important to note that when $C_{i}=0$ for all operators, the SMEFT Lagrangians simplifies to the SM Lagrangian.
-This implies that a sufficient deviation from a zero measurement may imply affects of new physics.
+This implies that a measurement of a Wilson coefficient which deviates from zero would indicate some effective interaction occurring.
 
-The effects on differential cross section with respect to an observable $X$ are similar,
+The differential cross section of a process with respect to an observable $X$ in the SMEFT is described by
 \begin{equation}\label{eq:smeft_diff_cross_section}
-    \frac{d\sigma}{dX} = \frac{d\sigma_{\text{SM}}}{dX} + \sum\limits_{i} \frac{1}{\Lambda^2} C_{i} \frac{d\sigma_{i}}{dX} + \sum\limits_{j,k} \frac{1}{\Lambda^4} C_{j} C_{k} \frac{d\sigma_{j k}}{dX}
+    \frac{d\sigma_{\text{SMEFT}}}{dX} = \frac{d\sigma_{\text{SM}}}{dX} + \sum\limits_{i} \frac{1}{\Lambda^2} C_{i} \frac{d\sigma_{i}}{dX} + \sum\limits_{j,k} \frac{1}{\Lambda^4} C_{j} C_{k} \frac{d\sigma_{j k}}{dX}
 \end{equation}
-in which these differentials are presented as binned measurements in data.
-
+where $X$ is a dependent of the cross section which include observables like a polar angle of a final state particle or the mass of the final state.
+These differential cross sections are commonly represented in data by binned measurements .
 Using (\ref{eq:smeft_diff_cross_section}), the influences of SMEFT can be identified within differential cross section measurements obtained through modern collider experiments.
-Typically, this is done using global fits to many differential cross sectional measurements with respect to different observables.
-This allows different operators, which may be coupled to some observables more than others, to be more effectively constrained.
+There also exist global fits which involve using multiple different independent observables to constrain multiple Wilson coefficients.
+This allows different operators which are related to some of the observables to be more effectively constrained.
 
 There has been interest in looking at the influences of SMEFT within the study of top quarks~\cite{Hartland_2019,Buckley_2015,Brivio_2020} due to the possibility of the top quark as an area for possible BSM physics.
-This report will investigate top pair production whose cross section at leading order is only impacted by limited sets of the dimension-6 operators. For the $q\bar{q} \rightarrow t\bar{t}$ process, the only relevant operator is the chromomagnetic moment operator, $O_{tg}$.
-The $gg \rightarrow t\bar{t}$ process is affected by $O_{tg}$ as well as a set of 8 operators known as four-fermion operators.
-This report will include the four-fermion operator $O_{tq}^{8}$.
+This report will investigate top pair production whose cross section at leading order is only impacted by limited sets of the dimension-6 operators. For the $gg \rightarrow t\bar{t}$ process, the only relevant operator is the chromomagnetic moment operator, $O_{tg}$.
+The $q\bar{q} \rightarrow t\bar{t}$ process is affected by $O_{tg}$ as well as a set of 8 operators known as four-fermion operators.
+This report will only include the four-fermion operator $O_{tq}^{8}$.
 
 The explicit form of these operators are
 \begin{align*}
     O_{tG} = (\bar{Q} \sigma^{\mu \nu} T^{A} t) \tilde{\phi} G^{A}_{\nu \mu} && O_{tq}^{8} = (\bar{q}_{i} \gamma^{\mu} T^{A} q_{i})(\bar{t} \gamma_{\mu} T^{A} t)
 \end{align*}
-where these fields expose some of the interactions which will be present in $t\bar{t}$ production.
-The operator $O_{tG}$ introduces or modifies the interactions seen in Figure~\ref{fig:smeft_diagrams} and the four fermion operator $C_{tq}^{8}$ introduces an effective contact vertex of $q\bar{q} \rightarrow t\bar{t}$.
+where these some of the interactions which will be present in $t\bar{t}$ production can be seen in the terms.
+The operator $O_{tG}$ introduces or modifies the interactions seen in Figure~\ref{fig:smeft_diagrams} and the four fermion operator $O_{tq}^{8}$ introduces an effective contact vertex of $q\bar{q} \rightarrow t\bar{t}$.
 Some of these are modifications of SM vertices while some are completely new effective interactions which are not present in the SM.
-
-
 
 \begin{figure}[htb]
     \centering
-    \begin{subfigure}[b]{0.3\textwidth}
+    \begin{subfigure}[b]{0.23\textwidth}
         \centering
         \feynmandiagram [small, horizontal=a to b] {
             i1 [particle=$\bar{q}$] -- [fermion] a -- [gluon] b [dot] -- [fermion] f1 [particle=$t$],
@@ -195,7 +215,7 @@ Some of these are modifications of SM vertices while some are completely new eff
         };
     \end{subfigure}
     \hfill
-    \begin{subfigure}[b]{0.3\textwidth}
+    \begin{subfigure}[b]{0.23\textwidth}
         \centering
         \feynmandiagram [small, vertical=a to b] {
             i1 [particle=$g$] -- [gluon] a [dot] -- [fermion] f1 [particle=$t$],
@@ -205,7 +225,7 @@ Some of these are modifications of SM vertices while some are completely new eff
     \end{subfigure}
     %\hfill
     \hfill
-    \begin{subfigure}[b]{0.3\textwidth}
+    \begin{subfigure}[b]{0.23\textwidth}
         \centering
         \begin{tikzpicture}
             \begin{feynman}
@@ -215,26 +235,41 @@ Some of these are modifications of SM vertices while some are completely new eff
                 \vertex [below left=1cm of a] (i2) {$g$};
                 \vertex [below right=1cm of a] (f2) {$\bar{t}$};
             \diagram* {
-                (i1) -- [gluon] (a) [dot] -- [fermion] (f1),
+                (i1) -- [gluon] (a) -- [fermion] (f1),
                 (i2) -- [gluon] (a) -- [anti fermion] (f2),
             };
             \end{feynman}
         \end{tikzpicture}
     \end{subfigure}
-
-    \caption{Examples of leading order diagrams which contribute to top pair production in SMEFT}
+    \hfill
+    \begin{subfigure}[b]{0.23\textwidth}
+        \centering
+        \begin{tikzpicture}
+            \begin{feynman}
+                \vertex (a);
+                \vertex [above left=1cm of a] (i1) {$q$};
+                \vertex [above right=1cm of a] (f1) {$t$};
+                \vertex [below left=1cm of a] (i2) {$\bar{q}$};
+                \vertex [below right=1cm of a] (f2) {$\bar{t}$};
+            \diagram* {
+                (i1) -- [fermion] (a) -- [fermion] (f1),
+                (i2) -- [anti fermion] (a) -- [anti fermion] (f2),
+            };
+            \end{feynman}
+        \end{tikzpicture}
+    \end{subfigure}
+    \caption{Examples of leading order SMEFT diagrams which contribute to top pair production in SMEFT. The dotted vertices represents SM vertices which are modified by $O_{tg}$. The two rightmost diagrams are new interactions introduced by $O_{tg}$ and $O^{8}_{tq}$.}
     \label{fig:smeft_diagrams}
 \end{figure}
 
+\section{dEFT}\label{sec:deft}
 
-
-
-\section{dEFT}
-
-dEFT, or differential Effective Field Theory tool, is an Python package created by Dr. James Keaveney~\cite{Keaveney_dEFT} to allow for predictions of SMEFT effects using differential cross section measurements.
+dEFT or \emph{differential Effective Field Theory tool}, is an Python package created by Dr. James Keaveney~\cite{Keaveney_dEFT} to allow for predictions of SMEFT effects using differential cross section measurements.
+The goal of dEFT is to build a predictive morphing model which can used to estimate a posterior distribution for the relevant Wilson coefficients using just a single configuration file containing both data and Monte Carlo predictions.
+This allows for simple, fast and reproducible analyses which can be defined in a plain text file.
 For this report, the repository was forked and further development was performed.
 The version used for the analysis contained in this report is available through Github~\cite{codecalec_dEFT} or the PyPI repositories~\cite{pypi_dEFT}.
-Using a single configuration file containing both data and Monte Carlo predictions, dEFT can build a predictive morphing model which is used to estimate a posterior distribution for the relevant Wilson coefficients.
+This section will provide an overview of dEFTs flavour of SMEFT analysis and how it can extract multi-dimensional probaility distribution functions for multilple Wilson coefficients from data.
 
 \begin{figure}[htb]
     \centering
@@ -279,20 +314,20 @@ This avoids the issue of finding a local maximisation which can be common due to
 The estimation for the coefficient is extracted from the likelihood distributions by considering percentiles of the discrete MCMC sampler prediction of the marginalised distribution of each operator.
 The 50\ts{th} percentile is attributed as the estimation for the coefficient with the 16\ts{th} and 84\ts{th} percentile forming a 68\% confidence interval about the estimate.
 This estimate allows for asymmetrical errors which can describe the measurement more faithfully than considering just the mean and variance of the samples.
+\todo{maybe talk about other approaches for smeft analysis}
 
-\todo{talk about Smefit methods}
-
-\section{Analysis}
-This analysis will examine the possibility of using double differential cross section measurements with respect to multiple in a SMEFT analysis.
-The results will be compared to outcomes when considering a single differential cross section.
-The main aim of a SMEFT analysis is to place constraints onto Wilson coefficients of SMEFT operators allowing us to investigate the potential occurrences of new interactions or modifications to SM interaction.
-Double differential cross sections are of interest due to the possibility of simultaneously constraining multiple operators which may present as different modifications to observable cross section distributions.
+\section{Analysis}\label{sec:analysis}
+This analysis examines the benefits of using double differential cross section measurements as a function of two observables in a SMEFT analysis.
+The results are compared to outcomes when considering just a single differential cross section.
+The main aim of a SMEFT analysis is to place constraints onto the Wilson coefficients of the SMEFT operators in order to constrain the potential occurrences of new interactions or modifications to the SM interactions.
+Double differential cross sections are of interest due to the possibility of simultaneously constraining multiple operators.
+Some operators may present as varying modifications to cross section distributions when considering the differential with repect to different observables.
 
 The only SMEFT operators considered were $O_{tG}$ and $O_{tq}^{8}$ with corresponding Wilson coefficients $C_{tG}$ and $C_{tq}^8$.
-For a full phenomelogical study, the entire set of relevant operators should be included but this would drastically increase the scale of computational processing.
-The limited set of operators should still show the influences of changing from a single dimensional differential cross section to a multidimensional differential cross section.
+For a full phenomenological study, the entire set of relevant operators should be included but this would drastically increase the scale of computational processing and analysis.
+The limited set of operators should still reveal the influences of changing from a single dimensional differential cross section to a multidimensional differential cross section.
 
-This analysis will begin with the details of discussion of the ATLAS datasets and the Monte Carlo event generation needed to create the morphing models for performing the constraints on the Wilson coefficients.
+This section will begin with the details of the ATLAS cross section measurements and the Monte Carlo event generation needed to create the morphing models for determining the constraints on the Wilson coefficients.
 This will move into applying this model and obtaining estimations for the distribution of the coefficients for both the single observable and the double observable.
 
 \subsection{Discussion of Datasets}
@@ -300,75 +335,84 @@ This report will use differential cross section data of top pair production from
 The data used is publicly available through HEPData~\cite{hepdata1750330}.
 This data was produced from pp collisions performed at a centre-of-mass energy $\sqrt{s} = 13$TeV over the course of 2015 and 2016 with an integrated luminosity of 36.1fb$^{-1}$.
 The $t\bar{t}$ final states are extracted from the $\ell$+jets channel in the resolved topology.
+This final state contains a leptonically decay top with a hadronically decaying top.
 Resolved topology implies that the decay products of the hadronically decaying top quark are angularly well separated.
 
-The double differential cross section observable considered  were the differential cross section as a function of the invariant mass of the $t\bar{t}$ system $m_{t\bar{t}}$ and the transverse momentum of the hadronically decaying top quark $p_{T}^{t}$.
-These are the mass of the top-antitop system in it's rest frame and the component of the hadronically decaying top's momentum travelling radially from the beam line in the collider.
+The double differential cross section observable considered was the differential cross section as a function of the invariant mass of the $t\bar{t}$ system $m_{t\bar{t}}$ and the transverse momentum of the hadronically decaying top quark $p_{T}^{t}$.
+These are the mass of the top-antitop system in its rest frame and the component of the hadronically decaying top's momentum travelling radially from the beam line in the collider.
 For the comparison with a single observable, the differential cross section as a function of just $m_{t\bar{t}}$ was examined.
 The differential cross section data for just $m_{t\bar{t}}$ may be referred to as the single or 1D obervable and the differential cross section data with respect to $m_{t\bar{t}}$ and $p_{T}^{t}$ may be referred to as the double or 2D observable.
 
 The data provided contains the associated statistical and systematic uncertainties introduced during the measurements of the cross sections.
 Multiple sources of systematic uncertainty are introduced in the process of measuring the $t\bar{t}$ systems.
 This includes the uncertainty associated with the reconstruction of the lepton and the various jet products of the process.
-There are also the uncertainty associated with the tagging of jets containing $b$-hadrons as well as accounting for possible misidentifications of jet flavour.
+There is also the uncertainty associated with the tagging of jets containing $b$-hadrons as well as accounting for possible misidentifications of jet flavour.
 The uncertainty associated with the reconstruction of the missing transverse momentum $E_{T}^{\text{miss}}$ must also be accounted for.
 Error in the modelling of the signal and background contributions and the Monte Carlo statistical error involved in creating these models are propagated.
 
 Through HEPData, the covariance matrices associated with the differential cross section measurements are made available to the public.
-The analysis was initially conducted including the full covariance matrix of each data set which was implemented into the likelihood definition as seen in (\ref{eq:likelihood}).
+The analysis was initially conducted with the full covariance matrix of each data set which was implemented into the likelihood definition as seen in (\ref{eq:likelihood}).
 Unfortunately, this caused the likelihood definition to produce fits which described the data very poorly compared to if only the diagonals of the matrices were considered.
-For the differential cross section data with respect to $m_{t\bar{t}}$, the fit produced with the full covariance matrix had a corresponding $\chi^2$ per degree of freedom of 12.60 while this was reduce to 0.53 when only considering the diagonal elements.
-The covariance matrices provided were examined and it was found that they indicated that each bin in the histogram was highly correlated for a dataset of this type.
-The single differential cross section histogram is shown as an example in Figure~\ref{fig:correlation}.
-This was considered to be an error in the covariance matrix provided by HEPData and the covariance between different bins is ignored.
+For the differential cross section data with respect to $m_{t\bar{t}}$, the fit produced with the full covariance matrix had a corresponding $\chi^2$ per degree of freedom of 12.60 while this was reduced to 0.53 when only considering just the diagonal elements.
+The covariance matrices provided were examined and it was found that they indicated that the bins of the histogram were highly correlated for a dataset of this type.
+The correlation matrix for the histogram is defined as
+\begin{equation}
+    \textrm{corr}(\vec{x}) = \textrm{diag}(V) V \textrm{diag}(V)
+\end{equation}
+where $\vec{x}$ are the bins of the histrogram and $V$ is the associated covariance matrix.
+The correlation between bins in the single differential cross section histogram is shown as an example in Figure~\ref{fig:correlation}.
+This was considered to be an error in the covariance matrix provided by HEPData and the covariance between different bins were ignored.
 
-\begin{figure}[htb]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.5\textwidth]{plots/correlation.png}
-    \caption{Correlation between $m_{t\bar{t}}$ bins of histogram for the differential cross section with respect to $m_{t\bar{t}}$ dataset}
+    \caption{Correlation matrix between $m_{t\bar{t}}$ bins of histogram for the differential cross section with respect to $m_{t\bar{t}}$ dataset}
     \label{fig:correlation}
 \end{figure}
 
 \subsection{Monte Carlo event generation}
-In order to build the morphing model required to generate cross sectional predictions, simulated samples are required throughout the space of Wilson coefficients of the operators of interest.
+In order to build the morphing model required to generate cross sectional predictions, simulated samples were required throughout the space of Wilson coefficients for the operators of interest.
 These samples were generate using the MadGraph5\textunderscore aMC@NLO~\cite{Alwall_2014} framework which allows for the simulation of processes for a user-defined Lagrangian.
-The SMEFTatNLO~\cite{degrande2020automated} FEYNRULES model implements SMEFT tree level and one loop processes into MadGraph5.
-Though there is the capacity to perform predictions at next-to-leading order, these calculations are very recent \todo{Justify why LO better} and greatly increase the processing time required to produce the Monte Carlo predictions.
-The simulations are performed to fixed order where only the desired observables of $m_{t\bar{t}}$ and ${p_{T}^{t}}$ are calculated and binned in the same binning arrangement as the ATLAS dataset of interest.
+The SMEFTatNLO~\cite{degrande2020automated} FEYNRULES model implements SMEFT tree level and NLO processes into MadGraph5.
+Though there is the capacity to perform predictions at next-to-leading order, these calculations are very recent and greatly increase the processing time required to produce the Monte Carlo predictions.
+This remains an area of exploration for further analysis.
+The simulations were performed to fixed order where only the desired observables of $m_{t\bar{t}}$ and ${p_{T}^{t}}$ are calculated and binned in the same binning arrangement as the ATLAS dataset of interest.
 
-Separate sets of MC signal was required for the single observable and the double observables analysis.
-Events were generated with values of $C_{tg}$ as -4, -3, -2.5, -2, -1, -0.5, 0, 0.5, 1, 2, 2.5, 3 and 4 and values of $C_{tq}^{8}$ as -4, -3, -2.5, -2, -1, -0.5, 0, 0.5, 1, 2, 2.5, 3 and 4. \todo{maybe rephrase this}
+Separate sets of MC signal was required for the single observable and the double observables analyses.
+Events were generated with 13 values of $C_{tg}$ ranging from  -4 to 4 and 13 values of $C_{tq}^{8}$ from -4 to 4.
 All permutations of these values were used resulting in a total number of 169 samples to build the two operator model and 13 samples to build the single operator model.
-The two operator model validation involved generating 100 validation samples at points different to those used for the building of the model.
+The two operator model validation involved generating 100 validation samples at points different to those used for the building of the model and the single operator model used 10 samples for validation.
 This simulation step imposes a great challenge when wanting to expand into using more SMEFT operators in the model.
 The number of required MC samples to ensure consistent description of the parameter space increases exponentially with the number of operators.
-This is a major factor in the decision to not include all 4-fermion operators in this report and would require more time and computational capacity.
-\todo{mention this fact in conclusion}
+This is a major factor in the decision to not include all top pair related 4-fermion operators in this report.
+It would drastically increase the required wall time and the computational capacity.
+
+In order for the simulated events to be comparable to the data taken from ATLAS, the uncertainty associated with the simulation must be estimated and the lowest order simulation must be scaled to be of the order of the measurements through a $k$-factor.
+This process is detailed in the following subsections.
 
 \subsubsection{Uncertainty due to simulation}\label{sec:scale_variance}
 
-The simulation calculations were required to obtain a statistical accuracy of 1\% for the prediction of the integrated cross section of top-antitop production.
-This level was considered a reliable since this error was minimal in comparison to the total uncertainty of the cross sectional data but still able to be performed in a reasonable time frame.
-An accuracy requirement on each bin was unavailable and would have allowed for a clearer comparison to the error associated with the data.
+The simulation calculations conducted were required to obtain a statistical accuracy of 1\% for the prediction of the integrated cross section of top-antitop production.
+This is handled by an configuration parameter in the MadGraph5 event generation.
+This level was considered reliable since this error was minimal in comparison to the total uncertainty of the ATLAS cross section data but still able to be computed in a reasonable time frame.
+An accuracy requirement on each bin was unavailable and would have allowed for a clearer comparison to the error associated with each bin of the data.
 
-Theoretical uncertainties on the Monte Carlo samples also needs to be accounted for.
+Theoretical uncertainties on the Monte Carlo samples also needed to be accounted for.
 This was done by varying the renormalisation and factorisation scales by two for the upper scale and by a half for the lower scale.
 The scale variance was calculated through MadGraph5 using the SMEFTatNLO model with all operators being suppress.
 This provided a scale variance prediction for the Standard Model at NLO which could then be applied to SMEFT samples.
 \todo{talk about error compared to validation value}
 
 \subsubsection{Calculation of \texorpdfstring{$k$}{k}-factor}
-Since the generated Monte Carlo samples only included LO processes, these predictions needed to be scaled to be comparable to the necessary data sets.
+Since the generated Monte Carlo samples only included LO processes, these predictions needed to be scaled to be comparable to the necessary data sets which includes processes of all orders.
 It can be considered fairly accurate to compare NNLO predictions to actual cross sectional data so a method of scaling the current predictions to this level is required.
 Due to the difficulty in calculating the $k$-factor for different combinations of Wilson coefficients values, the $k$-factor for the Standard Model prediction was used across the various SMEFT predictions.
 
-A flat $k$-factor across the differential cross sections was attempted to bring the LO predictions to the scale of NNLO predictions using the proportions between tree level calculations of total cross section~\cite{Alwall_2014} and measurement of total cross section using the ATLAS detector~\cite{ATLAS:2019hxz}.
+A flat $k$-factor across the differential cross sections was attempted to bring the LO predictions to the scale of NNLO predictions using the proportions between tree level calculations of total cross section~\cite{Alwall_2014} and measurement of total cross section using the ATLAS detector.
 This method failed due to some regions of the differential cross sections being poorly described at LO which caused a flat scaling to incorrectly describe the shape of the distributions at NNLO.
-This is exemplified by the low $m_{t\bar{t}}$ and high $p_{T}^{t}$ region in our two observable data set, as seen in Figure~\ref{fig:kfactor}.
+This is exemplified by the low $m_{t\bar{t}}$ and high $p_{T}^{t}$ region in the two observable data set, as seen in Figure~\ref{fig:kfactor}.
 This is remedied by requiring a per-bin $k$-factor when scaling from LO to NLO but still using the flat factor to build up to NNLO.
 The per-bin $k$-factor was found by comparing the Standard Model predictions of MadGraph5 at LO and NLO and applying this ratio to the Monte Carlo signal.
-The theoretical error associated with the calculated $k$-factor is fairly difficult to propagate through the model construction and should be dominated by the error associated with the data.
-This may have consequences on bins which are not well described at LO though the scale variances in these regions should dominate the uncertainties introduced by the $k$-factor.
 
 \begin{figure}[H]
     \centering
@@ -377,20 +421,25 @@ This may have consequences on bins which are not well described at LO though the
     \label{fig:kfactor}
 \end{figure}
 
+The theoretical error associated with the calculated $k$-factor is fairly difficult to propagate through the model construction and should be dominated by the error associated with the data.
+This may have consequences on bins which are not well described at LO though the scale variances in these regions should dominate the uncertainties introduced by the $k$-factor.
+
+
 \subsubsection{Response to operators}\label{sec:response}
 
-With a set of observables declared, Monte Carlo simulated events can be used to examine the response of $t\bar{t}$ differential cross sections when the associated Wilson coefficients are varied in the theory.
-Various theoretical predictions are shown in Figure~\ref{fig:comparison} for the double differential cross section explored in this report.
-Focussing on the response with respect to $C_{tG}$, there appears be a general scaling effect on the majority of bins in distribution.
-This provides a clear interpretation of the operator but exposes some issues in constraining it.
-If $O_{tG}$ is related to a scaling of the distribution, any other contribution which may scale the theoretical predictions may impact the estimation of $C_{tG}$ such as the $k$-factor used to ensure the leading order MC predictions are comparable to the data.
-It is assumed that any effects due to not describing even higher order than NNLO or error in the $k$-factor estimation would affect the distribution uniformly.
-This implies that the size of constraints determined for $C_{tG}$ would not be effected if the scale of the MC samples were adjusted.
+With a set of observables declared, Monte Carlo simulated events were used to examine the response of $t\bar{t}$ differential cross sections when the associated Wilson coefficients were varied in the theory.
+Various theoretical predictions are shown in Figure~\ref{fig:comparison} for the double differential cross section histogram explored in this report.
+Focussing on the response with respect to $C_{tG}$, there appears be a general normalisation effect on the majority of bins of the distribution.
+This provides a clear interpretation of the operator but exposes some issues in estimating $C_{tG}$.
+If $O_{tG}$ is related to a scaling of the distribution, any other contribution which scales the theoretical predictions may impact the estimation of $C_{tG}$.
+This would include the $k$-factor used to ensure the leading order MC predictions are comparable to the data.
+It is assumed that any effects due to not describing higher order terms or error in the $k$-factor estimation would affect the distribution uniformly.
+This implies that the width of constraints determined for $C_{tG}$ would not be effected if the scale of the MC samples were adjusted.
 
 The operator $C_{tq}^{8}$ has a more varied response across the distribution.
-It appears that the affects of $O_{tq}^{8}$ are more prominent at the higher regions of transverse momentum of the hadronically decaying top.
+It appears that the effects of $O_{tq}^{8}$ are more prominent at the higher regions of transverse momentum of the hadronically decaying top $p_{T}^{t}$.
 A major difference between the response in $C_{tq}^{8}$ and $C_{tG}$ is that an increasing $C_{tq}^{8}$ does not indicate an increase of cross section in a bin.
-This non-uniformity in how the bins transform could lead to distributions which aren't necessarily Gaussian.
+This non-uniformity in how the bins transform could lead to coefficient distributions which aren't necessarily Gaussian.
 If these effects are considered when modelling, it is expected that $C_{tq}^{8}$ may experience multiple optimised values which will be seen as a distribution with multiple peaks.
 
 \begin{figure}[H]
@@ -410,20 +459,21 @@ If these effects are considered when modelling, it is expected that $C_{tq}^{8}$
     \label{fig:comparison}
 \end{figure}
 
-\subsection{Single operator model}
+\subsection{Single operator model}\label{sec:analysis_one_op}
 
-As a test of method, a model was constructed considering only the $O_{tG}$ operator and applied to the 1-dimensional and 2-dimensional differential cross section measurements.
-Sensible results for this limited analysis will show the ability for dEFT to generate a successful model using the Monte Carlo samples and be able to link connections between the two datasets which share an influence from the distribution of cross section with respect to the mass of the top quark pairs.
-A separate model was created to suite each of the datasets which required separate sets of Monte Carlo samples in which the value of $C_{tG}$ was varied and the value of $C_{tq}^{8}$ was suppressed.
+As a test of method, two model were constructed considering only the $O_{tG}$ operator and applied to the 1-dimensional and 2-dimensional differential cross section measurements.
+Sensible results for this limited analysis will show the ability for dEFT to generate a successful model using the Monte Carlo samples.
+It would expected that links in the predictions exist between the two datasets which share an influence from the differential cross section with respect to the mass of the top quark pairs.
+A separate model was created to suit each of the datasets which then required separate sets of Monte Carlo samples in which the value of $C_{tG}$ was varied and the value of $C_{tq}^{8}$ was suppressed to the level of the SM.
+
 
 \subsubsection{Model Validation}
 
-The models used were created using Monte Carlo samples which influenced by statistical uncertainty.
+The models used were created using Monte Carlo samples which were influenced by statistical uncertainty.
 For the model to be considered suitable, the model should provide predictions of other Monte Carlo samples with a similar degree of certainty.
 This deviation is expected to be comparable to the 1\% required accuracy for integrated cross section imposed on the event generation within MadGraph5.
 
-
-Only 10 validation points of varying $C_{tG}$ were used for the 1-dimensional cross section and the 2-dimensional models.
+10 validation points of varying $C_{tG}$ were used for the 1-dimensional cross section and the 2-dimensional models.
 In order to compare the validation tests to the statistical simulation accuracy, the average relative residuals between the validation samples and the models' prediction for the associated coefficient values were considered.
 This is just the summation of the relative residuals of each bin in each test divided by the total number of bins across all tests.
 The standard deviation of this value should be in-line with the required accuracy.
@@ -503,7 +553,7 @@ The systematic uncertainty is larger when using the double observable which may 
 This indicates that this increase in the ability to constrain the coefficient may expose regions which are not well modelled by the theoretical predictions.
 
 
-\subsection{Double operator model}
+\subsection{Double operator model}\label{sec:analysis_two_op}
 
 The software and techniques for the single operator analysis could then be used to introduce another operator $O_{tq}^{8}$ as well as $O_{tG}$.
 This additional operator increases the scale of the analysis since more Monte Carlo samples are required to sufficiently describe this now 2-dimensional parameter space of the models.
@@ -564,7 +614,7 @@ However, the estimation of $C_{tq}^{8}$ in the double operator fit deviates grea
 
 This does provide some interest in possibly applying constraints beyond the Standard Model but there are some faults with this consideration.
 The systematic uncertainty associated with the model creation and prediction was not accounted for in the uncertainty estimation.
-Since these influences will equally be present when considering the double differential cross section data, this discussion will be deferred for later\todo{do the later} and these results will be used as a point of comparison between single and double observables analyses.
+Since these influences will equally be present when considering the double differential cross section data, this discussion will be deferred to later sections and these results will be used as a point of comparison between single and double observables analyses.
 
 \begin{figure}[htb]
     \centering
