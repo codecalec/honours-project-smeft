@@ -71,7 +71,7 @@ These operators describe possible effective interactions induced by heavier phys
 Due to the increase in detailed measurements of processes such as top pair production, it is possible to use LHC data in order to estimate the couplings for the SMEFT operators.
 
 This report applies the framework of SMEFT to a two sets of top quark observables from the ATLAS experiment at CERN.
-This involves a comparison of single and double differential cross section top pair data in order to determine their ability to constrain top quark related SMEFT operators.
+This involves a comparison of 1D and 2D differential cross section top pair data in order to determine their ability to constrain top quark related SMEFT operators.
 The following report is outlined as follows.
 It begins with some contextual information regarding the top physics in section~\ref{sec:topquarks}, an brief overview of the ATLAS detector in section~\ref{sec:ATLAS} and a more detailed explanation of SMEFT in section~\ref{sec:smeft}.
 This will lead into section~\ref{sec:deft} in which a description of the SMEFT analysis package dEFT is provided.
@@ -198,11 +198,15 @@ This report will only include the four-fermion operator $O_{tq}^{8}$.
 
 The explicit form of these operators are
 \begin{align*}
-    O_{tG} = (\bar{Q} \sigma^{\mu \nu} T^{A} t) \tilde{\phi} G^{A}_{\nu \mu} && O_{tq}^{8} = (\bar{q}_{i} \gamma^{\mu} T^{A} q_{i})(\bar{t} \gamma_{\mu} T^{A} t)
+    O_{tG} = (\bar{q} \sigma^{\mu \nu} T^{A} t) \tilde{\phi} G^{A}_{\mu \nu} && O_{tq}^{8} = (\bar{q}_{i} \gamma^{\mu} T^{A} q_{i})(\bar{t} \gamma_{\mu} T^{A} t)
 \end{align*}
-where these some of the interactions which will be present in $t\bar{t}$ production can be seen in the terms.
-The operator $O_{tG}$ introduces or modifies the interactions seen in Figure~\ref{fig:smeft_diagrams} and the four fermion operator $O_{tq}^{8}$ introduces an effective contact vertex of $q\bar{q} \rightarrow t\bar{t}$.
+which will result in some of the interactions which will be present in $t\bar{t}$ production.
 Some of these are modifications of SM vertices while some are completely new effective interactions which are not present in the SM.
+Some of the new or modified diagrams can be seen in Figure~\ref{fig:smeft_diagrams}.
+The definition of $O_{tq}^{8}$ includes a left handed quark $q$ and right handed quark $\bar{q}$ factor coupled with a left handed top $t$ and right handed top $\bar{t}$ where there is no factor accounting for any mediating virtual particle.
+This will contribute to top pair production as the effective contact vertex $q\bar{q} \rightarrow t\bar{t}$.
+The definition has a similar structure with a left handed top $t$ and a right handed quark $\bar{q}$ with a coupling to the gluon field $G^{A}_{\mu \nu}$.
+Considering only contributions to top pair production, this will influence the vertex $g \rightarrow t\bar{t}$ and introduce the BSM vertex $gg \rightarrow t\bar{t}$.
 
 \begin{figure}[htb]
     \centering
@@ -258,90 +262,111 @@ Some of these are modifications of SM vertices while some are completely new eff
             \end{feynman}
         \end{tikzpicture}
     \end{subfigure}
-    \caption{Examples of leading order SMEFT diagrams which contribute to top pair production in SMEFT. The dotted vertices represents SM vertices which are modified by $O_{tg}$. The two rightmost diagrams are new interactions introduced by $O_{tg}$ and $O^{8}_{tq}$.}
+    \caption{Examples of leading order SMEFT diagrams which contribute to top pair production in SMEFT. The dotted vertices represents SM vertices which are modified by $O_{tg}$. The two rightmost diagrams are new contact interactions introduced by $O_{tg}$ and $O^{8}_{tq}$ respectively.}
     \label{fig:smeft_diagrams}
 \end{figure}
 
 \section{dEFT}\label{sec:deft}
 
-dEFT or \emph{differential Effective Field Theory tool}, is an Python package created by Dr. James Keaveney~\cite{Keaveney_dEFT} to allow for predictions of SMEFT effects using differential cross section measurements.
-The goal of dEFT is to build a predictive morphing model which can used to estimate a posterior distribution for the relevant Wilson coefficients using just a single configuration file containing both data and Monte Carlo predictions.
-This allows for simple, fast and reproducible analyses which can be defined in a plain text file.
-For this report, the repository was forked and further development was performed.
+The differential Effective Field Theory tool (dEFT) is an Python package created by Dr. James Keaveney~\cite{Keaveney_dEFT} to allow for predictions of SMEFT effects using differential cross section measurements.
+The goal of dEFT is to build a predictive morphing model which can used to estimate a posterior distribution for Wilson coefficients of SMEFT operators using just a single configuration file containing both data and theoretical predictions.
+This allows for simple, fast and reproducible analyses which can be entirely defined in a plain text file.
+For this project, further development on the package was performed where the code was rewritten to follow more standard Python programming practices.
+Work was done to try allow for dEFT to be used as a form of standalone analysis as well as expose some of the internal functionality for more detailed analyses.
 The version used for the analysis contained in this report is available through Github~\cite{codecalec_dEFT} or the PyPI repositories~\cite{pypi_dEFT}.
-This section will provide an overview of dEFTs flavour of SMEFT analysis and how it can extract multi-dimensional probaility distribution functions for multilple Wilson coefficients from data.
+This section will provide an overview of dEFTs flavour of SMEFT analysis and how it can extract multi-dimensional probability distribution functions for multiple Wilson coefficients from data.
 
 \begin{figure}[htb]
     \centering
-    \includegraphics[width=0.5\textwidth]{images/deft-workflow.pdf}
-    \caption{Overview of dEFT workflow}
+    \includegraphics[width=0.75\textwidth]{images/deft-workflow.pdf}
+    \caption{A diagrammatic overview of the dEFT workflow. The diagram details the steps required to obtain create a model from Monte Carlo predictions and use this model to estimate the Wilson coefficients associated with data. This process will be detailed throughout section~\ref{sec:deft}.}
 \end{figure}
 
-\subsection{Model building}
-dEFT creates predictions for the observables of interest for varying values of Wilson coefficients by constructing a linear morphing model.
-The morphing model is a linear regression model which allows for the interpolation between different templates.
-These templates are Monte Carlo predictions which are generated around the region of parameter space which would be relevant for some dataset.
-For dEFT's application, cross sectional SMEFT predictions which are generated using a event generation framework are treated as templates.
-These predictions must describe the relevant set of operators $O_{i}$ with varying Wilson Coefficients in order to produce a reliable model.
-Using ($\ref{eq:smeft_cross_section}$), a linear model is constructed using these templates and produces a predictive model $\hat{\sigma}({C_i})$.
+\subsection{Building models using linear regression}
+dEFT creates predictions for the observables of interest for arbitrary values of Wilson coefficients by constructing and applying a type of model known as a linear morphing model.
+A linear morphing model is a model which allows for the linear interpolation between different Monte Carlo predictions of varying parameters.
+These Monte Carlo predictions are generated for different Wilson coefficient values which would be relevant for some dataset.
+For dEFT's application, cross sectional SMEFT predictions are created using a simulation framework in order to create the model.
+These predictions should include only relevant SMEFT operators $O_{i}$ for the observable for which the predictions are being made.
+Using ($\ref{eq:smeft_cross_section}$), a linear model $\hat{\sigma}({C_i})$ is constructed using these Monte carlo prediction.
 This model now allows for the prediction of some cross sectional observable for any values of Wilson coefficients pertaining to the relevant set of operators.
-Due to the reliance on MC samples, the model is dependent on the ability to produce high quality SMEFT differential cross section predictions.
+The morphing model could be avoided by instead using the simulation framework directly as the model but this has it's faults.
+This would require a large amount of computational time to sample the model at multiple different points as cross section computations would need to be performed each time.
+It also would remove the simplicity of using a single configuration file which dEFT has been built around.
 
-The model must be validated to ensure sensible predictions are being performed and the model predictions can be considered reliable.
-Additional Monte Carlo samples are generated at coefficient values between the templates used to create the model.
-These differential cross section samples are then compared to the model predictions to ensure the predictions agree within a suitable error comparable to the statistical error on the Monte Carlo samples.
-Unfortunately, due to validating using Monte Carlo samples, this method of validation is still vulnerable to issues which may arise from the modelling of the samples themselves.
+The model must be validated to ensure the resulting model produces predictions which are sufficiently similar to the predictions produced by the simulation framework when considering the same coefficient values.
+Additional simulated predictions are generated at coefficient values different to those used to create the model.
+These differential cross section predictions are then compared to the model predictions to ensure they agree within a suitable error comparable to the statistical error on the Monte Carlo samples.
+One issue with this form of validation is that any problems with the modelling of SMEFT in the simulation framework will not be seen in the validation tests.
+This validation can only determine if the constructed morphing model is similar to the modelling of the simulation.
 
 \subsection{Fitting Method}\label{sec:fitting}
-Once a model has been built, a fit to data is possible.
-dEFT performs fitting using Monte Carlo Markov Chain (MCMC) methods which allow for estimation of the likelihood distributions of the Wilson Coefficients using prior assumptions about their possible values.
-The fitting procedure uses \emph{emcee}~\cite{Foreman_Mackey_2013} as its MCMC implementation.
-MCMC requires an estimation for the likelihood function $P(y | C_{i})$ which represents the probability of obtaining some data $y$ given a set of model parameters $C_{i}$.
+Once a model has been built, estimating the Wilson coefficients of the data is possible.
+Parameter estimation through fitting a model involves varying the parameters of a model and observing the response in some statistic with respect to the data.
+Commonly, the parameters values which are extrema of the statistic best describe the data.
+dEFT performs fitting using Monte Carlo Markov Chain (MCMC) methods which allow for estimation of a multidimensional posterior distributions of the Wilson Coefficients $P(C_{i}|y)$ using prior assumptions about their possible values.
+MCMC estimates a distribution using a sampler which algorithmically sampling the distribution for varying parameters.
+This sampler will form a chain of samples which when consider as a whole, will provide a discrete approximation for the posterior distribution.
+MCMC methods are commonly used when sampling distributions which have a difficult analytic definition or might not even have an analytic form at all.
+The posterior distribution of the Wilson coefficients is
+\begin{equation}
+    P(C_{i}|y) \propto Pr(C_{i}) \mathcal{L}(y|C_{i})
+\end{equation}
+where $Pr(C_{i})$ is the prior and $\mathcal{L}(y|C_{i})$ is a likelihood definition.
+The posterior definition requires an estimation for the likelihood function $\mathcal{L}(y | C_{i})$ which is proportional the probability of obtaining some data $y$ given a set of model parameters $C_{i}$.
+dEFT uses the Python package \emph{emcee}~\cite{Foreman_Mackey_2013} as its MCMC implementation.
 
-A common log likelihood definition for binned data with Gaussian errors with the associated model $f$ is
+When estimating the posterior distribution, dEFT uses the logarithm of the likelihood instead of the likelihood which has maxima for the same coefficient values.
+The definition of log likelihood for binned Gaussian-distributed data with the associated model $f$ is
 \begin{equation}\label{eq:likelihood}
-    P(y | C_{i}) \propto \ln\mathcal{L}(y | C_{i}) = -\sum\limits_{n} (y_{n} - f_{n}(C_{i})) V^{-1} (y_{n} - f_{n}(C_{i}))
+    \ln\mathcal{L}(y | C_{i}) = -\sum\limits_{n} (y_{n} - f_{n}(C_{i})) V^{-1} (y_{n} - f_{n}(C_{i}))
 \end{equation}
 where $y_{n}$ is the binned cross sectional data, $V$ is the associated covariance matrix and $f_{n}(C_{i})$ is the morphing model prediction.
-In order for an estimation for the posterior likelihood distribution $P(C_{i} | y)$ to be made, a prior distribution $P(C_{i})$ is required.
+Note that this is the definition of the $\chi^{2}$ statistic where the covariance between bins is being considered.
+There are off-diagonal elements of the covariance matrix in the these cross sectional datasets since when events are unfolded to extract the required observable, this introduces inter-correlation between the binned data.
+In order for an estimation for the posterior distribution $P(C_{i} | y)$ to be made, a prior distribution $Pr(C_{i})$ is required.
 This takes the form of uniform distributions defined by some minimum and maximum for each $C_{i}$ parameter.
 MCMC will systematically sample throughout $C_{i}$ space building an estimation for the posterior distribution $P(C_{i}|y)$.
-Properties regarding $C_{i}$ can then be inferred.
+Properties regarding $C_{i}$ can be inferred from the resulting distributions.
 
-Since MCMC methods are used, an approximations for the $C_{i}$ distributions is obtained rather than a single value with an associated uncertainty which is common from other likelihood maximisation methods.
-This avoids the issue of finding a local maximisation which can be common due to the quadratic nature of the SMEFT model.
+An estimation for the coefficient is extracted from the approximated marginalised distribution of each operator.
+These marginalised distributions are obtained by considering just a single coefficient from each of the samples.
+The approximation for this single coefficient is defined by percentiles of the discrete samples.
+The 50\ts{th} percentile is attributed as the value for the coefficient with the 16\ts{th} and 84\ts{th} percentile forming a 68\% credible interval about the value.
+This definition allows for asymmetrical errors which can describe the measurement more faithfully than considering just the mean and variance of the samples.
 
-The estimation for the coefficient is extracted from the likelihood distributions by considering percentiles of the discrete MCMC sampler prediction of the marginalised distribution of each operator.
-The 50\ts{th} percentile is attributed as the estimation for the coefficient with the 16\ts{th} and 84\ts{th} percentile forming a 68\% confidence interval about the estimate.
-This estimate allows for asymmetrical errors which can describe the measurement more faithfully than considering just the mean and variance of the samples.
-\todo{maybe talk about other approaches for smeft analysis}
+Since MCMC methods are used, an approximations for the posterior distribution of $C_{i}$ is obtained rather than a single value which is common from other methods which attempt to maximise the likelihood.
+It is common to find issues of reaching local maxima in these other methods which can be fairly common when using a SMEFT model due to the quadratic terms in the SMEFT cross section definition.
+The use of a posterior distribution instead of a single value allows for more detailed results where the fit results can be displayed as a multidimensional histogram.
 
 \section{Analysis}\label{sec:analysis}
-This analysis examines the benefits of using double differential cross section measurements as a function of two observables in a SMEFT analysis.
-The results are compared to outcomes when considering just a single differential cross section.
+
+This analysis examines the benefits of using 2D differential cross section measurements in a SMEFT analysis.
+A 2D differential cross section refers to the cross section of a process with respect to two experimental observables.
+The results are compared to outcomes when considering just a 1D differential cross section.
 The main aim of a SMEFT analysis is to place constraints onto the Wilson coefficients of the SMEFT operators in order to constrain the potential occurrences of new interactions or modifications to the SM interactions.
-Double differential cross sections are of interest due to the possibility of simultaneously constraining multiple operators.
-Some operators may present as varying modifications to cross section distributions when considering the differential with repect to different observables.
+2D differential cross sections are of interest due to the possibility of simultaneously constraining multiple operators.
+A two different operator may have provide a different contribution when considering the differential cross section with respect to one observable compared to another.
+This difference in responses can be used to constrain the Wilson coefficients of these operators.
 
 The only SMEFT operators considered were $O_{tG}$ and $O_{tq}^{8}$ with corresponding Wilson coefficients $C_{tG}$ and $C_{tq}^8$.
-For a full phenomenological study, the entire set of relevant operators should be included but this would drastically increase the scale of computational processing and analysis.
-The limited set of operators should still reveal the influences of changing from a single dimensional differential cross section to a multidimensional differential cross section.
+For a more complete analysis, all relevant four fermion operators should be included but this would drastically increase the scale of computational processing and analysis.
+The limited set of only two operators should still reveal the influences of changing from a single dimensional differential cross section to a multidimensional differential cross section.
 
-This section will begin with the details of the ATLAS cross section measurements and the Monte Carlo event generation needed to create the morphing models for determining the constraints on the Wilson coefficients.
-This will move into applying this model and obtaining estimations for the distribution of the coefficients for both the single observable and the double observable.
+This section will begin with the details of the ATLAS cross section measurements and the SMEFT cross section simulations needed to create the morphing models for determining the constraints on the Wilson coefficients.
+The section will move into applying this model and obtaining estimations for the distribution of the coefficients for both the 1D observable and the two observable.
 
-\subsection{Discussion of Datasets}
+\subsection{Measurements of differential cross section of \texorpdfstring{$t\bar{t}$}{ttbar} production}
 This report will use differential cross section data of top pair production from the ATLAS experiment~\cite{ATLAS:2019hxz} at the CERN Large Hadron Collider.
 The data used is publicly available through HEPData~\cite{hepdata1750330}.
 This data was produced from pp collisions performed at a centre-of-mass energy $\sqrt{s} = 13$TeV over the course of 2015 and 2016 with an integrated luminosity of 36.1fb$^{-1}$.
-The $t\bar{t}$ final states are extracted from the $\ell$+jets channel in the resolved topology.
-This final state contains a leptonically decay top with a hadronically decaying top.
-Resolved topology implies that the decay products of the hadronically decaying top quark are angularly well separated.
+The properties of the $t\bar{t}$ system are extracted from the $\ell$+jets channel in the resolved topology where the resolved topology implies that the decay of the hadronically decaying top are well separated in angle.
+This decay scheme contains a leptonically decay top with a hadronically decaying top.
 
-The double differential cross section observable considered was the differential cross section as a function of the invariant mass of the $t\bar{t}$ system $m_{t\bar{t}}$ and the transverse momentum of the hadronically decaying top quark $p_{T}^{t}$.
+The 2D differential cross section observable considered was the differential cross section as a function of the invariant mass of the $t\bar{t}$ system $m_{t\bar{t}}$ and the transverse momentum of the hadronically decaying top quark $p_{T}^{t}$.
 These are the mass of the top-antitop system in its rest frame and the component of the hadronically decaying top's momentum travelling radially from the beam line in the collider.
-For the comparison with a single observable, the differential cross section as a function of just $m_{t\bar{t}}$ was examined.
-The differential cross section data for just $m_{t\bar{t}}$ may be referred to as the single or 1D obervable and the differential cross section data with respect to $m_{t\bar{t}}$ and $p_{T}^{t}$ may be referred to as the double or 2D observable.
+For the comparison with a 1D observable, the differential cross section as a function of just $m_{t\bar{t}}$ was examined.
+The differential cross section data for just $m_{t\bar{t}}$ may be referred to as the single or 1D obervable and the differential cross section data with respect to $m_{t\bar{t}}$ and $p_{T}^{t}$ may be referred to as the 2D observable.
 
 The data provided contains the associated statistical and systematic uncertainties introduced during the measurements of the cross sections.
 Multiple sources of systematic uncertainty are introduced in the process of measuring the $t\bar{t}$ systems.
@@ -351,64 +376,75 @@ The uncertainty associated with the reconstruction of the missing transverse mom
 Error in the modelling of the signal and background contributions and the Monte Carlo statistical error involved in creating these models are propagated.
 
 Through HEPData, the covariance matrices associated with the differential cross section measurements are made available to the public.
+Inter-bin correlations are introduced due to the detector effects which may cause an event to be placed in a neighbouring bin than the truth information would imply.
 The analysis was initially conducted with the full covariance matrix of each data set which was implemented into the likelihood definition as seen in (\ref{eq:likelihood}).
 Unfortunately, this caused the likelihood definition to produce fits which described the data very poorly compared to if only the diagonals of the matrices were considered.
 For the differential cross section data with respect to $m_{t\bar{t}}$, the fit produced with the full covariance matrix had a corresponding $\chi^2$ per degree of freedom of 12.60 while this was reduced to 0.53 when only considering just the diagonal elements.
-The covariance matrices provided were examined and it was found that they indicated that the bins of the histogram were highly correlated for a dataset of this type.
-The correlation matrix for the histogram is defined as
+The covariance matrices provided were examined and it was found that they indicated that the bins of the histogram were very correlated for a dataset of this type.
+The correlation matrix for the binned differential cross section measurement is defined as
 \begin{equation}
     \textrm{corr}(\vec{x}) = \textrm{diag}(V) V \textrm{diag}(V)
 \end{equation}
-where $\vec{x}$ are the bins of the histrogram and $V$ is the associated covariance matrix.
-The correlation between bins in the single differential cross section histogram is shown as an example in Figure~\ref{fig:correlation}.
+where $\vec{x}$ are the bins of the histogram and $V$ is the associated covariance matrix.
+The correlation between bins in the 1D differential cross section histogram is shown as an example in Figure~\ref{fig:correlation}.
+This shows that some bins have over 90\% correlation with other bins which are not particularly.
+The magnitude of this type of correlation could not be attributed to just detector effects.
 This was considered to be an error in the covariance matrix provided by HEPData and the covariance between different bins were ignored.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\textwidth]{plots/correlation.png}
-    \caption{Correlation matrix between $m_{t\bar{t}}$ bins of histogram for the differential cross section with respect to $m_{t\bar{t}}$ dataset}
+    \caption{Correlation matrix between $m_{t\bar{t}}$ bins of histogram for the differential cross section with respect to $m_{t\bar{t}}$ dataset. All bins shows a large correlation with all other bins ranging from \textasciitilde~50\% to \textasciitilde~90\%. The diagonal elements of 1 show the correct calculation for the self correlations of bins.}
     \label{fig:correlation}
 \end{figure}
 
-\subsection{Monte Carlo event generation}
-In order to build the morphing model required to generate cross sectional predictions, simulated samples were required throughout the space of Wilson coefficients for the operators of interest.
+\subsection{Simulation of Monte Carlo samples}
+In order to build the morphing model, simulated samples were required throughout the space of Wilson coefficients for the operators of interest.
 These samples were generate using the MadGraph5\textunderscore aMC@NLO~\cite{Alwall_2014} framework which allows for the simulation of processes for a user-defined Lagrangian.
-The SMEFTatNLO~\cite{degrande2020automated} FEYNRULES model implements SMEFT tree level and NLO processes into MadGraph5.
-Though there is the capacity to perform predictions at next-to-leading order, these calculations are very recent and greatly increase the processing time required to produce the Monte Carlo predictions.
+The SMEFTatNLO~\cite{degrande2020automated} FEYNRULES model implements SMEFT LO and NLO processes into MadGraph5.
+Though there is the capacity to perform predictions at NLO, these calculations greatly increase the processing time required to produce the Monte Carlo predictions.
 This remains an area of exploration for further analysis.
-The simulations were performed to fixed order where only the desired observables of $m_{t\bar{t}}$ and ${p_{T}^{t}}$ are calculated and binned in the same binning arrangement as the ATLAS dataset of interest.
+The simulations were performed to fixed order which means only the desired observables of $m_{t\bar{t}}$ and ${p_{T}^{t}}$ are calculated and binned in the same binning arrangement as the ATLAS dataset of interest.
 
-Separate sets of MC signal was required for the single observable and the double observables analyses.
-Events were generated with 13 values of $C_{tg}$ ranging from  -4 to 4 and 13 values of $C_{tq}^{8}$ from -4 to 4.
-All permutations of these values were used resulting in a total number of 169 samples to build the two operator model and 13 samples to build the single operator model.
-The two operator model validation involved generating 100 validation samples at points different to those used for the building of the model and the single operator model used 10 samples for validation.
-This simulation step imposes a great challenge when wanting to expand into using more SMEFT operators in the model.
+Separate sets of MC signal was required for the 1D observable and the 2D observables analyses.
+Calculations were performed with 13 values of $C_{tg}$ ranging from -4 to 4 and 13 values of $C_{tq}^{8}$ from -4 to 4.
+This resulted in the single operator model having 13 samples to build the model.
+The two operator model using the different combination of the 13 $C_{tg}$ values and the 13 $C_{tq}^{8}$ values in order to have 169 samples.
+Additional samples were also required to perform validation of the model predictions.
+These samples were required to not be at the same coefficient values as the samples which were used to build the models.
+The single operator model used 10 samples of varying $C_{tg}$ for validation.
+The two operator model used 100 samples with varying $C_{tg}$ and $C_{tq}^{8}$.
+The simulation stage imposes a great challenge when wanting to expand into using more SMEFT operators in the model.
 The number of required MC samples to ensure consistent description of the parameter space increases exponentially with the number of operators.
 This is a major factor in the decision to not include all top pair related 4-fermion operators in this report.
 It would drastically increase the required wall time and the computational capacity.
 
-In order for the simulated events to be comparable to the data taken from ATLAS, the uncertainty associated with the simulation must be estimated and the lowest order simulation must be scaled to be of the order of the measurements through a $k$-factor.
+In order for the simulated events to be comparable to the data taken from ATLAS, the uncertainty associated with the simulation must be estimated and the lowest order simulation must be scaled to be comparable to the measurements through a $k$-factor.
 This process is detailed in the following subsections.
 
-\subsubsection{Uncertainty due to simulation}\label{sec:scale_variance}
+\subsubsection{Uncertainty due to simulation}\label{sec:scale_variation}
 
 The simulation calculations conducted were required to obtain a statistical accuracy of 1\% for the prediction of the integrated cross section of top-antitop production.
+This places a numerical error within the numerical integration performed when calculating the cross sections.
 This is handled by an configuration parameter in the MadGraph5 event generation.
 This level was considered reliable since this error was minimal in comparison to the total uncertainty of the ATLAS cross section data but still able to be computed in a reasonable time frame.
 An accuracy requirement on each bin was unavailable and would have allowed for a clearer comparison to the error associated with each bin of the data.
 
 Theoretical uncertainties on the Monte Carlo samples also needed to be accounted for.
 This was done by varying the renormalisation and factorisation scales by two for the upper scale and by a half for the lower scale.
-The scale variance was calculated through MadGraph5 using the SMEFTatNLO model with all operators being suppress.
-This provided a scale variance prediction for the Standard Model at NLO which could then be applied to SMEFT samples.
-\todo{talk about error compared to validation value}
+This scale variation is intended to describe contribution from higher order contributions in the theory.
+The scale variation was calculated through MadGraph5 using the SMEFTatNLO model with all operators being suppress.
+This provided a prediction of the scale variation effects for the Standard Model at NLO which could then be applied to SMEFT samples.
+Even at NLO, these scale variation effects can influence the total cross section by between 5\% to 10\%.
+This exceeds the error on the ATLAS data and the uncertainty introduced due to numerical accuracy of the simulations.
 
 \subsubsection{Calculation of \texorpdfstring{$k$}{k}-factor}
-Since the generated Monte Carlo samples only included LO processes, these predictions needed to be scaled to be comparable to the necessary data sets which includes processes of all orders.
+Since the generated SMEFT predictions only included LO processes, these predictions needed to be scaled to be comparable to the necessary datasets.
 It can be considered fairly accurate to compare NNLO predictions to actual cross sectional data so a method of scaling the current predictions to this level is required.
+NNLO is considered to be a sufficient order since performing the theoretical calculation beyond this becomes very difficult.
 Due to the difficulty in calculating the $k$-factor for different combinations of Wilson coefficients values, the $k$-factor for the Standard Model prediction was used across the various SMEFT predictions.
 
-A flat $k$-factor across the differential cross sections was attempted to bring the LO predictions to the scale of NNLO predictions using the proportions between tree level calculations of total cross section~\cite{Alwall_2014} and measurement of total cross section using the ATLAS detector.
+A flat $k$-factor across the differential cross sections was attempted to bring the LO predictions to the scale of NNLO predictions using the proportions between LO calculations of total cross section from MadGraph5 and the predicted total cross section up to NNLO which was calculated using the Top++2.0 program~\cite{Czakon:2011xx}.
 This method failed due to some regions of the differential cross sections being poorly described at LO which caused a flat scaling to incorrectly describe the shape of the distributions at NNLO.
 This is exemplified by the low $m_{t\bar{t}}$ and high $p_{T}^{t}$ region in the two observable data set, as seen in Figure~\ref{fig:kfactor}.
 This is remedied by requiring a per-bin $k$-factor when scaling from LO to NLO but still using the flat factor to build up to NNLO.
@@ -416,30 +452,27 @@ The per-bin $k$-factor was found by comparing the Standard Model predictions of 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{plots/k_factor.png}
-    \caption{Comparison of estimations of absolute double differential $t\bar{t}$ cross section with respect to $m_{t\bar{t}}$ and $p_{T}^{t}$ to varying orders. The scaling from an LO approximation to an NLO approximation was determined using a per-bin method and the NNLO prediction was determined using a flat factor.}
+    \includegraphics[width=\textwidth]{plots/k_factor.png}
+    \caption{Comparison of estimations of absolute 2D differential $t\bar{t}$ cross section with respect to $m_{t\bar{t}}$ and $p_{T}^{t}$ to varying orders. The 2D bins are shown with each panel describing a different $m_{ttbar}$ bin in which the $p_{t}^{T}$ bins are shown. The scaling from an LO approximation (blue) to an NLO approximation (green) was determined using a per-bin method and the NNLO prediction (orange) was determined using a flat factor. The associated ATLAS data is also included for comparison.}
     \label{fig:kfactor}
 \end{figure}
 
 The theoretical error associated with the calculated $k$-factor is fairly difficult to propagate through the model construction and should be dominated by the error associated with the data.
-This may have consequences on bins which are not well described at LO though the scale variances in these regions should dominate the uncertainties introduced by the $k$-factor.
-
+This may have consequences on bins which are not well described at LO though the scale variances should dominate the uncertainties introduced by the $k$-factor.
 
 \subsubsection{Response to operators}\label{sec:response}
 
-With a set of observables declared, Monte Carlo simulated events were used to examine the response of $t\bar{t}$ differential cross sections when the associated Wilson coefficients were varied in the theory.
-Various theoretical predictions are shown in Figure~\ref{fig:comparison} for the double differential cross section histogram explored in this report.
+With a set of observables declared, simulated samples were used to examine the response of $t\bar{t}$ differential cross sections when the associated Wilson coefficients were varied in the theory.
+Various theoretical predictions for cross section are shown in Figure~\ref{fig:comparison}.
 Focussing on the response with respect to $C_{tG}$, there appears be a general normalisation effect on the majority of bins of the distribution.
 This provides a clear interpretation of the operator but exposes some issues in estimating $C_{tG}$.
 If $O_{tG}$ is related to a scaling of the distribution, any other contribution which scales the theoretical predictions may impact the estimation of $C_{tG}$.
 This would include the $k$-factor used to ensure the leading order MC predictions are comparable to the data.
-It is assumed that any effects due to not describing higher order terms or error in the $k$-factor estimation would affect the distribution uniformly.
-This implies that the width of constraints determined for $C_{tG}$ would not be effected if the scale of the MC samples were adjusted.
 
 The operator $C_{tq}^{8}$ has a more varied response across the distribution.
 It appears that the effects of $O_{tq}^{8}$ are more prominent at the higher regions of transverse momentum of the hadronically decaying top $p_{T}^{t}$.
-A major difference between the response in $C_{tq}^{8}$ and $C_{tG}$ is that an increasing $C_{tq}^{8}$ does not indicate an increase of cross section in a bin.
-This non-uniformity in how the bins transform could lead to coefficient distributions which aren't necessarily Gaussian.
+A major difference between the response in $C_{tq}^{8}$ and $C_{tG}$ is that an increasing $C_{tq}^{8}$ does not uniformally increase of cross section.
+This non-uniformity in how the bins transform could lead to posterior distributions for the Wilson coefficients which aren't necessarily Gaussian.
 If these effects are considered when modelling, it is expected that $C_{tq}^{8}$ may experience multiple optimised values which will be seen as a distribution with multiple peaks.
 
 \begin{figure}[H]
@@ -455,59 +488,64 @@ If these effects are considered when modelling, it is expected that $C_{tq}^{8}$
         \includegraphics[width=\textwidth]{plots/data_plot_ctq.png}
         \caption{Response to $C_{tq}^{8}$}
     \end{subfigure}
-    \caption{Comparison of simulated theoretical predictions of double differential cross section of $t\bar{t}$ production as a function of $m_{t\bar{t}}$ and $p_{t}^{T}$ for varying values of $C_{tG}$ and $C_{tq}^{8}$. The ATLAS measurements are also shown.}
+    \caption{Comparison of simulated theoretical predictions of 2D differential cross section of $t\bar{t}$ production as a function of $m_{t\bar{t}}$ and $p_{t}^{T}$ for varying values of $C_{tG}$ and $C_{tq}^{8}$. The ATLAS measurements are also shown.}
     \label{fig:comparison}
 \end{figure}
+\todo{extend caption}
 
 \subsection{Single operator model}\label{sec:analysis_one_op}
 
 As a test of method, two model were constructed considering only the $O_{tG}$ operator and applied to the 1-dimensional and 2-dimensional differential cross section measurements.
-Sensible results for this limited analysis will show the ability for dEFT to generate a successful model using the Monte Carlo samples.
-It would expected that links in the predictions exist between the two datasets which share an influence from the differential cross section with respect to the mass of the top quark pairs.
-A separate model was created to suit each of the datasets which then required separate sets of Monte Carlo samples in which the value of $C_{tG}$ was varied and the value of $C_{tq}^{8}$ was suppressed to the level of the SM.
-
+Results for this analysis will show the ability for dEFT to generate a successful model using the Monte Carlo samples.
+Since both the 1D and 2D differential cross section are influenced by the distribution of mass of $t\bar{t}$ system, both datasets contribute the same information to the fitting procedure.
+The 2D cross section will provide more information regarding the distribution of $p_{T}^{t}$.
+A separate model was created for the 1D and the 2D datasets which then required separate sets of Monte Carlo samples.
+When these samples were generated, the value of the coefficient $C_{tG}$ were varied and the value of coefficient $C_{tq}^{8}$ was set to 0.
 
 \subsubsection{Model Validation}
 
-The models used were created using Monte Carlo samples which were influenced by statistical uncertainty.
-For the model to be considered suitable, the model should provide predictions of other Monte Carlo samples with a similar degree of certainty.
-This deviation is expected to be comparable to the 1\% required accuracy for integrated cross section imposed on the event generation within MadGraph5.
+The models used were created using Monte Carlo samples which subject to statistical uncertainty in the simulation process.
+For the model to be considered, the model should provide predictions of other statistically independent samples with a similar degree of certainty.
+This deviation is expected to be comparable to the 1\% required accuracy for integrated cross section imposed MadGraph5.
+Note that this is accuracy is applied on each bin of the cross sections but across the entire distribution.
 
-10 validation points of varying $C_{tG}$ were used for the 1-dimensional cross section and the 2-dimensional models.
+The validation of the models each required 10 validation MC statistically independent samples of varying $C_{tG}$ for the 1-dimensional and the 2-dimensional cross section models.
 In order to compare the validation tests to the statistical simulation accuracy, the average relative residuals between the validation samples and the models' prediction for the associated coefficient values were considered.
-This is just the summation of the relative residuals of each bin in each test divided by the total number of bins across all tests.
-The standard deviation of this value should be in-line with the required accuracy.
+The average relative residuals is the summation of the relative difference of each bin between the model and the sample in each test divided by the total number of bins across all tests.
+The standard deviation of this value should be the required accuracy of the simulation.
 
-An example of one of these tests can be seen in Figure~\ref{fig:test_example}. All predictions across the bins in the tests are within at least 5\% of the MC sample provided by MadGraph5.
-For most of the tests, the deviations per bin do exceed the 1\% accuracy required for the integrated cross section on some of the bins.
-However, considering the average relative residuals allows for a more general estimation of the performance of the models predictive capacity.
+An example of a validation test where $C_{tg}=-2.0$ can be seen in Figure~\ref{fig:test_example}.
+All model predictions across the bins in the tests deviate no more than 5\% from the MC sample provided by MadGraph5.
+For most of the tests, the deviations per bin do exceed the 1\% accuracy required for the simulation for some bins.
+The average relative residuals allows for a more general estimation of the performance of the models predictive capacity where per-bin deviation are ignored to see overall deviation from simulation.
 
 \begin{figure}[htb]
     \centering
-    \includegraphics[width=0.6\textwidth]{plots/validation_ATLAS-ctg_2_1D_1OP.png}
-    \caption{Example of validation test for single observable model for $C_{tG}=2$. The error bars shown represent a 1\% deviation on the MadGraph5 prediction.}
+    \includegraphics[width=0.9\textwidth]{plots/validation_ATLAS-ctg_2_1D_1OP.png}
+    \caption{Example of validation test for the one observable model for the 1D differential cross section with for $C_{tG}=-2$. The model prediction for $C_{tG}=-2$ is compared to the simulated prediction created by Madgraph5 with $C_{tG}=-2$. The error bars shown represent a 1\% deviation on the MadGraph5 prediction. The ratio between the bins of the model and the simulation prediction is shown below.}
     \label{fig:test_example}
 \end{figure}
 
 The average relative residuals with the associated standard deviation is $0.10\pm1.21\%$ for the 1D observable model and $0.35\pm1.30\%$ for the 2D observable model.
-The results of the validation tests show that both models on average provide very small deviation compared to the Monte Carlo signal and is comparable to the uncertainty introduced by the statistical error associated with the Monte Carlo signal.
+The results of the validation tests show that both models provide very small deviation compared to the Monte Carlo sample and is comparable to the uncertainty introduced by the statistical error associated with the Monte Carlo samples.
 
-\subsubsection{Uncertainty due to scale variance}
-The theoretical uncertainty related to the Monte Carlo samples are encapsulated by the upper and lower bound of the scale variance as mentioned in Section~\ref{sec:scale_variance}.
-This uncertainty is propagated through the model by reperforming the fitting procedure for when the Monte Carlo samples are adjusted to the upper and lower scales.
-This will provide two sets of results for the coefficients which can be used as bounds to estimate the systematic uncertainty introduced by the theoretical variance in the simulated samples.
-
-The estimated uncertainty associated with the scale variance of the Monte Carlo samples for the 1-dimensional model is $^{+0.07}_{-0.06}$ and for the 2-dimensional model is $^{+0.16}_{-0.16}$.
+\subsubsection{Uncertainty due to scale variation}
+The theoretical uncertainty related to the Monte Carlo samples are encapsulated by the upper and lower bound of the scale variation as mentioned in Section~\ref{sec:scale_variation}.
+This uncertainty is estimated through the building the model using simulation samples with adjusted scale variation.
+These new models will then be fitted to the ATLAS data.
+The Monte Carlo samples are adjusted to the upper and lower scale which will provide two sets of results for the posterior distributions for the Wilson coefficients.
+These results can be used as bounds to estimate the systematic uncertainty of the Wilson coefficients introduced by the theoretical variation in the simulated samples.
+The uncertainty of $C_{tG}$ associated with the scale variation of the Monte Carlo samples for the 1-dimensional model is $^{+0.07}_{-0.06}$ and for the 2-dimensional model is $^{+0.16}_{-0.16}$.
 
 \subsubsection{Results}
-The estimated likelihood distributions created during the fitting procedure for the 1-dimensional observable and the 2-dimensional observable are shown in Figure~\ref{fig:corner_1OP}.
-Both observable types produced likelihood distributions with a similar Gaussian shape.
-The estimation for the Wilson coefficient using the single differential cross section was $C_{tG}=0.46^{+0.08}_{-0.09}(stat.)^{+0.07}_{-0.06}(sys.)$ and using the double differential cross section, the obtained estimate was $C_{tG}=0.47^{+0.05}_{-0.05}(stat.)^{+0.16}_{-0.16}(sys.)$.
-The resulting prediction for the single and double differential cross section models is shown in Figure~\ref{fig:model_result_1OP}.
+The estimated posterior distributions created during the fitting procedure for the 1-dimensional observable and the 2-dimensional observable are shown in Figure~\ref{fig:corner_1OP}.
+The results for the fits of both observable types produced posterior distributions with a similar Gaussian shape.
+The estimation for the Wilson coefficients using the 1D differential cross section was $C_{tG}=0.46^{+0.08}_{-0.09}(data.)^{+0.07}_{-0.06}(pred sys.)$ and using the 2D differential cross section, the obtained estimate was $C_{tG}=0.47^{+0.05}_{-0.05}(data.)^{+0.16}_{-0.16}(pred sys.)$.
+The resulting prediction for the 1D and 2D differential cross section models is shown in Figure~\ref{fig:model_result_1OP}.
 These predictions show that the optimised estimate for $C_{tG}$ provides better prediction of the data for both models then the SM prediction of the models.
 The $\chi^{2}$ per degree of freedom statistic for these predictions with respect to their data quantify the goodness of fit.
-The 1D observable model predictions has an associated $\chi^{2}$ per degree of freedom of 1.2 for the optimised prediction and 3.16 for the SM prediction.
-For the 2D observable model, the $\chi^{2}$ per degree of freedom was 2.53 for the optimised prediction and 5.60 for the SM prediction.
+The 1D observable model predictions has an associated $\chi^{2}$ per degree of freedom of 1.2 for the SMEFT prediction corresponding to $C_{tG}=0.46$ and 3.16 for the SM prediction.
+For the 2D observable model, the $\chi^{2}$ per degree of freedom was 2.53 for the SMEFT prediction corresponding to $C_{tG}=0.46$ and 5.60 for the SM prediction.
 
 \begin{figure}[htb]
     \centering
@@ -522,7 +560,7 @@ For the 2D observable model, the $\chi^{2}$ per degree of freedom was 2.53 for t
         \includegraphics[width=\textwidth]{plots/ATLAS-ctg_2D_1OP.png}
         \caption{2-Dimensional Observable}
     \end{subfigure}
-    \caption{Estimation for the likelihood distribution for the Wilson coefficient $C_{tG}$. The dotted lines on distributions represent a 68\% confidence interval. Uncertainty estimates for the Wilson coefficients are discussed in Section \ref{sec:fitting} and only represent statistical error.}
+    \caption{Estimation for the posterior distribution for the Wilson coefficient $C_{tG}$. The dotted lines on distributions represent a 68\% credible interval. Uncertainty estimates for the Wilson coefficients are discussed in Section \ref{sec:fitting} and the errors shown on the plot only represent the statistical error due to the fit.}
     \label{fig:corner_1OP}
 \end{figure}
 
@@ -539,31 +577,29 @@ For the 2D observable model, the $\chi^{2}$ per degree of freedom was 2.53 for t
         \includegraphics[width=\textwidth]{plots/ATLAS_model_result_2D_1OP.png}
         \caption{2-Dimensional observable model}
     \end{subfigure}
-    \caption{Predictions of $m_{t\bar{t}}$ differential cross section measurements using two models at the optimised value of the model parameter with respect to the respective ATLAS datasets. The data used to perform the fit and the models' predictions for when all SMEFT operators supressed are also shown.}
+    \caption{Predictions of $m_{t\bar{t}}$ differential cross section measurements using two models at the optimised value of the model parameter with respect to the respective ATLAS datasets. The data used to perform the fit and the models' predictions for the SM are also shown.}
     \label{fig:model_result_1OP}
 \end{figure}
 
-
-The estimation for the optimised value of $C_{tG}$ for the models agree within a 68\% confidence interval and provides some interesting points of comparison.
-The statistical uncertainty associated with the measurement is lower for the double differential cross section model.
-This means that even though there are increased relative errors on the bins for double differential cross sections measurements then for single differential cross sections, the double observable model provides greater constraints on $C_{tG}$ than the single observable model.
-This may indicate that using this double observable would allow for better constraints on Wilson coefficients in SMEFT analyses.
+The estimations for the optimised value of $C_{tG}$ for the models agree within a 68\% confidence interval and provides some interesting points of comparison.
+The statistical uncertainty associated with the measurement is lower for the 2D differential cross section model.
+This means that even though there are increased relative errors on the bins for 2D differential cross sections measurements than for 1D differential cross sections, the 2D observable model provides tighter constraints on $C_{tG}$ than the 1D observable model.
+This may indicate that using this 2D observable would allow for better constraints on Wilson coefficients in SMEFT analyses.
 A caveat arises when the systematic uncertainty is considered.
-The systematic uncertainty is larger when using the double observable which may indicate that the bins which are allowing for the greater constraint of the coefficient may be more affected by the scale variance.
+The systematic uncertainty is larger when using the 2D observable which may indicate that the bins which are allowing for the greater constraint of the coefficient may be more affected by the scale variation.
 This indicates that this increase in the ability to constrain the coefficient may expose regions which are not well modelled by the theoretical predictions.
 
-
-\subsection{Double operator model}\label{sec:analysis_two_op}
+\subsection{Two operator model}\label{sec:analysis_two_op}
 
 The software and techniques for the single operator analysis could then be used to introduce another operator $O_{tq}^{8}$ as well as $O_{tG}$.
-This additional operator increases the scale of the analysis since more Monte Carlo samples are required to sufficiently describe this now 2-dimensional parameter space of the models.
-The estimation of likelihood distributions of the coefficients produced by the MCMC methods are now 2-dimensional and expose any correlations between the fitted parameters.
+This additional operator increases the scope of the analysis since more Monte Carlo samples are required to sufficiently describe this now 2-dimensional parameter space of the models.
+The estimation of posterior distributions of the coefficients produced by the MCMC methods are now 2-dimensional and expose any correlations between the fitted parameters.
 
 \subsubsection{Model Validation}
 
 The results of the validation testing for both models can be seen in Figure~\ref{fig:residuals_hist} where deviations between the model predictions and the validation samples are shown by the average relative residuals.
-The tests for the single observable model appear to follow an accuracy of 1.09\% which is in-line with the expectation from the event generation.
-The average relative residuals for the double observable model appear to be distributed by a normal distribution as well but with a deviation of 1.68\%.
+The tests for the 1D observable model appear to follow an accuracy of 1.09\% which is in-line with the expectation from the event generation.
+The average relative residuals for the 2D observable model appear to be distributed by a normal distribution as well but with a deviation of 1.68\%.
 This result is larger than the validation deviation of the single obervable but is still comparable to the statistical accuracy of the MC samples.
 When considering the results across all validation tests, both models appeared to provide sufficient agreement with the MadGraph5 samples and were used for estimating the distributions of the Wilson coefficients.
 
@@ -580,7 +616,7 @@ When considering the results across all validation tests, both models appeared t
         \includegraphics[width=\textwidth]{./plots/residuals_hist_2D.png}
         \caption{2-Dimensional Observable}
     \end{subfigure}
-    \caption{Distribution of average relative residuals between model predictions at some set of coefficient values and the corresponding MC validation sample for each model. This includes the validation tests over 100 different validation points. The dotted line represents a Gaussian fit to the histogram through $\chi^2$ minimisation with the results of the fit shown.}
+    \caption{Distribution of average relative residuals between model predictions at some set of coefficient values and the corresponding MC validation sample for each model. Each entry of the histogram is the average relative residuals for a single validation test. This includes the validation tests over 100 different validation points. The dotted line represents a Gaussian fit to the histogram through $\chi^2$ minimisation with the results of the fit shown.}
     \label{fig:residuals_hist}
 \end{figure}
 
@@ -589,32 +625,32 @@ When considering the results across all validation tests, both models appeared t
 
 The estimations for the 2D likelihood distributions for the Wilson coefficients generated by each model are shown in Figure~\ref{fig:corner_2OP}.
 It should be noted that the expansion of the parameter space to 2 operators has allowed for the description of the distribution in the form of a 2D likelihood distribution as well as a marginal distribution for each coefficient.
-First, the results of the single observable analysis using two operators will be detailed.
+First, the results of the 1D observable analysis using two operators will be detailed.
 
-\paragraph{Single observable model}
+\paragraph{1D observable model}
 
-The distribution created using the single observable model provided estimates of $C_{tG}=0.24^{+0.11}_{-0.11}$ and $C_{tq}^{8}=1.56^{+0.25}_{-0.31}$ with these estimates only considering statistical deviation of the distribution.
+The posterior distribution created through fitting the 1D observable model to data provided estimates of $C_{tG}=0.24^{+0.11}_{-0.11}$ and $C_{tq}^{8}=1.56^{+0.25}_{-0.31}$ where these estimates are only considering statistical uncertainty of the distribution due to the fitting procedure.
 A notable features of the marginal $C_{tq}^{8}$ distribution is a large peak at $C_{tq}^{8}\approx-2.5$ second less prominent peak located at $C_{tq}^{8}\approx-2.5$.
 This is a product of the quadratic nature of the SMEFT model and is a behaviour which is expected when considering the response of the differential cross section with respect to $m_{t\bar{t}}$ as discussed in section~\ref{sec:response}.
 The major peak in the distribution appears to show a negative correlation between $C_{tg}$ and $C_{tq}^8$.
 This could be a result of the overall scaling introduced by $O_{tg}$ correlating with the scaling on some bins caused $O_{tq}^{8}$.
 
-The model created using the upper bound of the scale variance of the MC signal produced an estimation of $C_{tG}=0.21$ and $C_{tq}=1.33$.
-The lower bound of the scale variance of the MC signal produced an estimation of $C_{tG}=0.27$ and $C_{tq}=1.78$.
+The model created using the upper bound of the scale variation of the MC signal produced an estimation of $C_{tG}=0.21$ and $C_{tq}=1.33$.
+The lower bound of the scale variation of the MC signal produced an estimation of $C_{tG}=0.27$ and $C_{tq}=1.78$.
 \todo{should I consider uncertainty on these values?}
-This implies a resulting systematic uncertainties introduced due to the scale variance of the simulated data of $\pm 0.03$ for $C_{tG}$ and $^{+0.22}_{-0.23}$ for $C_{tq}^{8}$.
+This implies a resulting systematic uncertainties introduced due to the scale variation of the simulated data of $\pm 0.03$ for $C_{tG}$ and $^{+0.22}_{-0.23}$ for $C_{tq}^{8}$.
 
-The single observable analysis obtained an estimate for the Wilson coefficients of $C_{tg} = 0.24 \pm 0.11 (stat.) \pm 0.03 (sys.)$ and $C_{tq}^{8}=1.56^{+0.25}_{-0.31} (stat.) ^{+0.22}_{-0.23} (sys.)$.
+The 1D observable analysis obtained an estimate for the Wilson coefficients of $C_{tg} = 0.24 \pm 0.11 (data) \pm 0.03 (pred sys.)$ and $C_{tq}^{8}=1.56^{+0.25}_{-0.31} (data) ^{+0.22}_{-0.23} (pred sys.)$.
 The model prediction for this estimation can be seen in Figure~\ref{fig:model_result_1D_2OP}.
-The predictions from the model at the optimised coefficients appears to better describe the data compared to using the model with all coefficients force to zero.
+The predictions from the model at the optimised coefficients appears to better describe the data compared to using the SM prediction from the model.
 The optimised prediction corresponded to a $\chi^{2}$ per degree of freedom of 0.54 with respect to the data while the all zero prediction corresponded to a $\chi^{2}$ per degree of freedom of 3.16 indicating that the optimised prediction better describes the data.
 
-When these coefficient estimations are compared with those obtained when using just $C_{tg}$, there is an agreement with the value of $C_{tG}$ when considering both the statistical and systematic uncertainty on these measurements.
-However, the estimation of $C_{tq}^{8}$ in the double operator fit deviates greatly from the assumed value of $C_{tq}^{8}=0$ for the single operator models and for SM predictions.
+When these coefficient estimations are compared with those obtained when using the single operator model, there is an agreement with the value of $C_{tG}$ when considering both the statistical uncertainty of the fits and systematic uncertainty introduced by the scale variation.
+However, the estimation of $C_{tq}^{8}$ in the fit using the two operator model deviates greatly from the assumed value of $C_{tq}^{8}=0$ for the single operator models and for SM predictions.
 
 This does provide some interest in possibly applying constraints beyond the Standard Model but there are some faults with this consideration.
 The systematic uncertainty associated with the model creation and prediction was not accounted for in the uncertainty estimation.
-Since these influences will equally be present when considering the double differential cross section data, this discussion will be deferred to later sections and these results will be used as a point of comparison between single and double observables analyses.
+Since these influences will equally be present when considering the 2D differential cross section data, this discussion will be deferred to later sections and these results will be used as a point of comparison between single and two observables analyses.
 
 \begin{figure}[htb]
     \centering
@@ -632,37 +668,37 @@ Since these influences will equally be present when considering the double diffe
         \label{fig:corner_2D_2OP}
     \end{subfigure}
     \centering
-    \caption{Estimation for the 2D likelihood distribution and 1D marginal distributions for the Wilson coefficient $C_{tG}$ and $C_{tq}^{8}$ obtained by fitting each model onto the respective ATLAS differential cross section measuremnts. The blue lines represent SM predictions. The dotted lines on the marginal distributions represent a 68\% confidence interval. Uncertainty estimates for the Wilson coefficients are discussed in Section \ref{sec:fitting} and only represent statistical error.}
+    \caption{Estimation for the 2D posterior distribution and 1D marginal distributions for the Wilson coefficient $C_{tG}$ and $C_{tq}^{8}$ obtained by fitting each model onto the respective ATLAS differential cross section measuremnts. The blue lines represent SM predictions. The dotted lines on the marginal distributions represent a 68\% confidence interval. Uncertainty estimates for the Wilson coefficients are discussed in Section \ref{sec:fitting} and the uncertainty on the plot show only the statistical uncertainty introduced by the fit.}
     \label{fig:corner_2OP}
 \end{figure}
 
-\paragraph{Double observable model}
+\paragraph{2D observable model}
 
-The double observable analysis when considering the two operators provided results which fall more in line with the results found for the single operator case.
+The 2D observable analysis when considering the two operators provided results which fall more in line with the results found for the single operator case.
 The distributions produced through the MCMC method have estimates of the Wilson coefficient values of $C_{tG}=0.49_{-0.07}^{+0.06}$ and $C_{tq}^{8}=-0.51_{-0.70}^{+0.69}$.
 It can be seen that the 2D observable model applies better constraints of statistical uncertainty on $O_{tG}$ similar to what occurred for the 1D observable model.
-The shape of the distribution shows a more prominent double peak structure compared to what was seen in the single observable analysis for two observables.
+The shape of the distribution shows a more prominent double peak structure compared to what was seen in the 1D observable analysis for two observables.
 This makes interpreting the value of the coefficients fairly difficult. \todo{more detail}
 
-These two peaks provide two optimised values which would maximise the likelihood which isn't fully compatible with the quantile definitions of the best fit value and uncertainty which has been used for evaluating the optimised coefficient values for the other models.
+These two peaks provide two optimised values which would maximise the likelihood which isn't fully compatible with the percentile definitions of the best fit value and uncertainty which has been used for evaluating the optimised coefficient values for the other models.
 In order to extract the estimations provided by each of these peaks, a more traditional likelihood maximisation algorithm through the L-BFGS algorithm provided through SciPy~\cite{2020SciPy-NMeth} was used.
 The two maximums were determined by providing different initial conditions for each peak.
 The uncertainty on these estimates were obtained by using the inverse Hessian matrix provided by the algorithm implementation.
 The estimation for the points of maximum likelihood are $C_{tq}^{8\,(1)}=-1.14\pm0.39$ and $C_{tq}^{8\,(2)}=0.10\pm0.37$.
-This provides a solution $C_{tq}^{8\,(2)}$ which agrees with zero and therefore is consistent with the SM prediction and the single operator model result for the double observable.
-Since the SMEFT does allow these multiple peaks, the entire distribution should be considered and the estimation found using quantiles will be considered further.
+This provides a solution $C_{tq}^{8\,(2)}$ which agrees with zero and therefore is consistent with the SM prediction and the single operator model result for the 2D observable.
+Since the SMEFT does allow these multiple peaks, the entire distribution should be considered and the estimation found using percentiles will be considered further.
 If more operators were included in some analysis, another coefficient could suppress one of these peaks and provide a clear measurement of $C_{tq}^{8}$.
 
-The estimated systematic uncertainty associated with the scale variance of the simulated samples is $^{+0.11}_{-0.13}$ for $C_{tG}$ and $^{+0.21}_{-0.87}$ for $C_{tq}^{8}$. \todo{maybe change to table}
-The final estimation for the Wilson coefficients using the quantile definition for the $t\bar{t}$ differential cross section with respect to $m_{t\bar{t}}$ and $p_{T}^{t}$ are $C_{tG} = 0.49_{-0.07}^{+0.06}(stat) ^{+0.11}_{-0.13} (sys.)$ and $C_{tq}^{8}=-0.51_{-0.70}^{+0.69} (stat.) ^{+0.21}_{-0.87} (sys.)$.
+The estimated systematic uncertainty associated with the scale variation of the simulated samples is $^{+0.11}_{-0.13}$ for $C_{tG}$ and $^{+0.21}_{-0.87}$ for $C_{tq}^{8}$. \todo{maybe change to table}
+The final estimation for the Wilson coefficients using the percentile definition for the $t\bar{t}$ differential cross section with respect to $m_{t\bar{t}}$ and $p_{T}^{t}$ are $C_{tG} = 0.49_{-0.07}^{+0.06}(stat) ^{+0.11}_{-0.13} (sys.)$ and $C_{tq}^{8}=-0.51_{-0.70}^{+0.69} (stat.) ^{+0.21}_{-0.87} (sys.)$.
 The model prediction for this estimation can be seen in Figure~\ref{fig:model_result_2D_2OP}.
 The fitted parameters provide a better goodness of fit with respect to the data compared to SM predictions of the model with the fitted values corresponding to a $\chi^{2}$ per degree of freedom of 2.76 while the SM predictions resulted in a $\chi^{2}$ per degree of freedom of 5.60.
 
 Both of the peak solutions do not agree with the optimal parameter found for the single operator model within statistical uncertainty.
-This suggests that that the result for the single observable is describing some qualities of the cross sectional distribution which is not present when the double observable is considered.
-This is extremely interesting since it indicates that the method for model creation used can generate models which produce estimations for the coefficients which are not consistent between the single differential cross section and the double differential cross section.
+This suggests that that the result for the 1D observable is describing some qualities of the cross sectional distribution which is not present when the 2D observable is considered.
+This is extremely interesting since it indicates that the method for model creation used can generate models which produce estimations for the coefficients which are not consistent between the 1D differential cross section and the 2D differential cross section.
 A possible reason for this discrepancy may be due to the modelling of $C_{tq}^{8}$ and the ability for the morphing model creation to describe the operator's relationship to $\frac{\partial \sigma}{\partial m_{t\bar{t}}}$.
-The use of a double differential cross section may expose more information needed for the model creation which is integrated out when looking at the single differential.
+The use of a 2D differential cross section may expose more information needed for the model creation which is integrated out when looking at the single differential.
 
 
 \begin{figure}[H]
